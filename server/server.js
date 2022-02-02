@@ -1,24 +1,25 @@
 const express = require('express');
-const mongoose = require('mongoose');
+
 const bodyParser = require('body-parser');
 const jwt = require('jsonwebtoken');
 const path = require('path')
 const User = require('./models/userModel')
 const routes = require('./routes/route.js');
+const adminRouter = require('./routes/admin.js');
+require('../config/database.js');
 require("dotenv").config({
   path: path.join(__dirname, "../.env")
 });
+
+
 
 const app = express();
 
 
 const PORT = process.env.PORT || 3000;
 
-mongoose.connect('mongodb://localhost:27017/rbac', { useNewUrlParser: true }).then(() => {
-  console.log('Connected to the Database successfully')
-});
-
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
 
 app.use(async (req, res, next) => {
   if (req.headers["x-access-token"]) {
@@ -42,6 +43,10 @@ app.use(async (req, res, next) => {
 });
 
 app.use('/', routes);
+app.use('/admin', adminRouter);
+
+
+
 
 app.listen(PORT, () => {
   console.log('Server is listening on Port:', PORT)

@@ -12,7 +12,7 @@ async function validatePassword(plainPassword, hashedPassword) {
   return await bcrypt.compare(plainPassword, hashedPassword);
 }
 
-exports.grantAccess = function(action, resource) {
+exports.grantAccess = function (action, resource) {
   return async (req, res, next) => {
     try {
       const permission = roles.can(req.user.role)[action](resource);
@@ -42,11 +42,40 @@ exports.allowIfLoggedin = async (req, res, next) => {
   }
 }
 
+exports.index = async (req, res) => {
+  const users = await User.find().populate('cats');
+  res.send(users);
+}
+
+exports.show = async (req, res) => {
+  const users = await User.findById(req.params.id).populate('cats');
+  res.send(users);
+}
+
 exports.signup = async (req, res, next) => {
   try {
-    const { role, email, password } = req.body
+
+    const { name, email, password, cpf, rg, birthDate, address, city, state, role } = req.body
+
+    let user = await User.findOne({ email });
+    if (user) {
+      return res.status(400).json({
+        error: "This email already exists, try a new one"
+      }).end()
+    }
     const hashedPassword = await hashPassword(password);
-    const newUser = new User({ email, password: hashedPassword, role: role || "basic" });
+    const newUser = new User({
+      name: name,
+      email: email,
+      password: hashedPassword,
+      cpf: cpf,
+      rg: rg,
+      birthDate: birthDate,
+      address: address,
+      city: city,
+      state: state,
+      role: role || "basic"
+    });
     const accessToken = jwt.sign({ userId: newUser._id }, process.env.JWT_SECRET, {
       expiresIn: "1d"
     });
@@ -57,15 +86,17 @@ exports.signup = async (req, res, next) => {
       message: "You have signed up successfully"
     })
   } catch (error) {
-    next(error)
+    res.status(500).json({ error: 'Internal error, please try again' });
   }
 }
 
 exports.login = async (req, res, next) => {
+  const { email, password } = req.body;
+
   try {
-    const { email, password } = req.body;
-    const user = await User.findOne({ email });
-    if (!user) return next(new Error('Email does not exist'));
+    let user = await User.findOne({ email });
+    if (!user)
+      res.status(401).json({ error: 'Incorrect email or password' });
     const validPassword = await validatePassword(password, user.password);
     if (!validPassword) return next(new Error('Password is not correct'))
     const accessToken = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
@@ -83,9 +114,7 @@ exports.login = async (req, res, next) => {
 
 exports.getUsers = async (req, res, next) => {
   const users = await User.find({});
-  res.status(200).json({
-    data: users
-  });
+  res.status(200).json({ users });
 }
 
 exports.getUser = async (req, res, next) => {
@@ -103,9 +132,9 @@ exports.getUser = async (req, res, next) => {
 
 exports.updateUser = async (req, res, next) => {
   try {
-    const { role } = req.body
+    const { email, password, role, cat } = req.body
     const userId = req.params.userId;
-    await User.findByIdAndUpdate(userId, { role });
+    await User.findByIdAndUpdate(userId, { email, password, role, cat });
     const user = await User.findById(userId)
     res.status(200).json({
       data: user
