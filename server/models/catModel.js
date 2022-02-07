@@ -5,9 +5,8 @@ const CatSchema = new Schema({
   name: {
     type: String,
     required: true,
-    trim: true,
-    unique: true
   },
+
   birthDate: {
     type: String,
     required: true
@@ -21,16 +20,22 @@ const CatSchema = new Schema({
     type: Boolean
   },
 
+  specialCat: { 
+    type: Boolean
+  },
+
   description: { 
     type: String
   },
 
-  adoptiveUser: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
-    required: false
+  available: {
+    type: Boolean,
+    default: true,
+    required: true
   }
-})
+}, {
+  timestamps: true
+});
 
 const Cat = mongoose.model('cat', CatSchema)
 

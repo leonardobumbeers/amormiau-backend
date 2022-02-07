@@ -32,6 +32,10 @@ const UserSchema = new Schema({
     type: String
   },
 
+  phone: {
+    type: String
+  },
+
   address: {
     type: String
   },
@@ -51,13 +55,19 @@ const UserSchema = new Schema({
   },
 
   cats: [
-    { type: mongoose.Schema.Types.ObjectId, ref: 'Cat' }
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'cat',
+    }
   ],
 
   accessToken: {
     type: String
   }
-})
+
+}, {
+  timestamps: true
+});
 
 const User = mongoose.model('user', UserSchema)
 

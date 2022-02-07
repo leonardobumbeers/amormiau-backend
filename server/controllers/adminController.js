@@ -1,8 +1,10 @@
 const User = require('../models/userModel');
 const Cat = require('../models/catModel');
 const jwt = require('jsonwebtoken');
+const userController = require('../controllers/userController');
 
-const { roles } = require('../roles')
+const { roles } = require('../roles');
+const { updateMany } = require('../models/userModel');
 
 async function hashPassword(password) {
   return await bcrypt.hash(password, 10);
@@ -45,15 +47,16 @@ exports.allowIfLoggedin = async (req, res, next) => {
 exports.registerCat = async (req, res) => {
   try {
 
-    const { name, birthDate, weight, sterilized, description } = req.body
+    const { name, birthDate, weight, sterilized, specialCat, description } = req.body
 
     const newCat = new Cat({
       name: name,
       birthDate: birthDate,
       weight: weight,
       sterilized: sterilized,
-      description: description,
-      adoptiveUser: null,
+      specialCat: specialCat,
+      available: true,
+      description: description
     });
     await newCat.save();
     res.json({
@@ -66,7 +69,7 @@ exports.registerCat = async (req, res) => {
 }
 
 exports.getCats = async (req, res, next) => {
-  const cats = await Cat.find({});
+  const cats = await Cat.find();
   res.status(200).json({ data: cats });
 }
 
@@ -74,7 +77,7 @@ exports.getCats = async (req, res, next) => {
 exports.getCat = async (req, res, next) => {
   try {
     const catId = req.params.userId;
-    const cat = await User.findById(catId);
+    const cat = await User.findById(catId).populate('user');
     if (!cat) return next(new Error('Cat does not exist'));
     res.status(200).json({
       data: cat
@@ -87,38 +90,68 @@ exports.getCat = async (req, res, next) => {
 
 exports.updateCat = async (req, res, next) => {
   try {
-    let { name, birthDate, weight, sterilized, description, userId } = req.body
-    userId = await User.findOne({ userId })
+    const updatedName = req.body.name;
+    const updatedBirthDate = req.body.birthDate;
+    const updatedWeight = req.body.weight;
+    const updatedSterilized = req.body.sterilized;
+    const updatedSpecialCat = req.body.specialCat;
+    const updatedDescription = req.body.description;
+    const updatedAvailable = req.body.available;
+
 
     const catId = req.params.catId;
-    let catNew = await Cat.findOneAndUpdate(catId, {
-      name: name,
-      birthDate: birthDate,
-      weight: weight,
-      sterilized: sterilized,
-      description: description,
-      adoptiveUser: userId
-    });
-    
-    userId.cat.push(catNew);
-    userId.save();
 
-    const cat = await Cat.findById(catId)
-    //const cat = await User.findById(userId)
+
+    var catNew = await Cat.findById(catId)
+      .then(cat => {
+        cat.name = updatedName;
+        cat.birthDate = updatedBirthDate;
+        cat.weight = updatedWeight;
+        cat.sterilized = updatedSterilized;
+        cat.specialCat = updatedSpecialCat;
+        cat.description = updatedDescription;
+        cat.available = updatedAvailable;
+        return cat.save()
+      })
+
     res.status(200).json({
-      data: cat,
+      data: catNew,
       message: "Cat is updated successfully"
     });
+
+
+  } catch (error) {
+    res.status(400).json(error);
+  }
+}
+
+exports.adoptCat = async (req, res, next) => {
+  try {
+
+    const catId = req.params.catId;
+    const userId = req.body.userId
+
+    
+    await User.findOneAndUpdate({ cats: {$in: [catId] }}, { $set: { cats: []}})
+
+
+    var catNew = await Cat.findById(catId)
+      .then(cat => {    
+        cat.available = false;
+        return cat.save()
+      })
+      var userNew = await User.findById(userId)
+      .then(user => {         
+        user.cats = catId;
+        return user.save()
+      })
+
+    res.status(200).json({
+      data: catNew, userNew,
+      message: "Cat and User updated successfully"
+    });
+
   } catch (error) {
     next(error)
   }
 }
-
-
-const isOwner = (user, cat) => {
-  if(JSON.stringify(user._id) == JSON.stringify(cat._id))
-    return true;
-  else
-    return false;
-}
-

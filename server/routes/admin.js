@@ -9,11 +9,13 @@ router.get('/cats', userController.allowIfLoggedin, userController.grantAccess('
 
 router.get('/cat/:catId', userController.allowIfLoggedin, userController.grantAccess('readAny', 'profile'), adminController.getCat);
 
-router.put('/cat/:userId', userController.allowIfLoggedin, userController.grantAccess('updateAny', 'profile'), adminController.updateCat);
+router.put('/adoptCat/:catId', userController.allowIfLoggedin, userController.grantAccess('updateAny', 'profile'), adminController.adoptCat);
 
-router.get('/user/:userId', userController.allowIfLoggedin, userController.show);
+router.put('/cat/:catId', userController.allowIfLoggedin, userController.grantAccess('updateAny', 'profile'), adminController.updateCat);
 
-router.get('/users', userController.allowIfLoggedin, userController.grantAccess('readAny', 'profile'), userController.index);
+router.get('/user/:userId', userController.allowIfLoggedin, userController.getUser);
+
+router.get('/users', userController.allowIfLoggedin, userController.grantAccess('readAny', 'profile'), userController.getUsers);
 
 router.put('/:userId', userController.allowIfLoggedin, userController.grantAccess('updateAny', 'profile'), userController.updateUser);
 

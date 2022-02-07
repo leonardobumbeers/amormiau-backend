@@ -1,4 +1,5 @@
 const User = require('../models/userModel');
+const Cat = require('../models/catModel');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 
@@ -42,20 +43,24 @@ exports.allowIfLoggedin = async (req, res, next) => {
   }
 }
 
-exports.index = async (req, res) => {
-  const users = await User.find().populate('cats');
-  res.send(users);
+exports.index = async (req, res, next) => {
+  try {
+    const users = await User.find().populate('cat');
+    res.send(users);
+  } catch (error) {
+    next(error.message);
+  }
 }
 
 exports.show = async (req, res) => {
-  const users = await User.findById(req.params.id).populate('cats');
+  const users = await User.findById(req.params.id).populate('cat');
   res.send(users);
 }
 
 exports.signup = async (req, res, next) => {
   try {
 
-    const { name, email, password, cpf, rg, birthDate, address, city, state, role } = req.body
+    const { name, email, password, cpf, rg, birthDate, phone, address, city, state, role } = req.body
 
     let user = await User.findOne({ email });
     if (user) {
@@ -71,9 +76,11 @@ exports.signup = async (req, res, next) => {
       cpf: cpf,
       rg: rg,
       birthDate: birthDate,
+      phone: phone,
       address: address,
       city: city,
       state: state,
+      cats: [],
       role: role || "basic"
     });
     const accessToken = jwt.sign({ userId: newUser._id }, process.env.JWT_SECRET, {
@@ -84,9 +91,9 @@ exports.signup = async (req, res, next) => {
     res.json({
       data: newUser,
       message: "You have signed up successfully"
-    })
+    }).status(200)
   } catch (error) {
-    res.status(500).json({ error: 'Internal error, please try again' });
+    next(error);
   }
 }
 
@@ -113,14 +120,18 @@ exports.login = async (req, res, next) => {
 }
 
 exports.getUsers = async (req, res, next) => {
-  const users = await User.find({});
-  res.status(200).json({ users });
+  try {
+    const users = await User.find().populate('cats')
+    res.status(200).json({ data: users });
+  } catch (error) {
+    next(error);
+  }
 }
 
 exports.getUser = async (req, res, next) => {
   try {
     const userId = req.params.userId;
-    const user = await User.findById(userId);
+    const user = await User.findById(userId).populate('cats')
     if (!user) return next(new Error('User does not exist'));
     res.status(200).json({
       data: user
@@ -132,17 +143,31 @@ exports.getUser = async (req, res, next) => {
 
 exports.updateUser = async (req, res, next) => {
   try {
-    const { email, password, role, cat } = req.body
+    const updatedEmail = req.body.email;
+    const updatedPassword = req.body.password;
+    const updatedRole = req.body.role;
+    const updatedCats = req.body.cats;
+    const hashedPassword = await hashPassword(updatedPassword);
     const userId = req.params.userId;
-    await User.findByIdAndUpdate(userId, { email, password, role, cat });
-    const user = await User.findById(userId)
+
+    var userNew = await User.findById(userId)
+      .then(user => {
+        user.role = updatedRole || "basic";
+        user.email = updatedEmail;
+        user.password = hashedPassword;
+        user.cats = updatedCats;
+        return user.save()
+      })
+
     res.status(200).json({
-      data: user
+      data: userNew,
+      message: "User has been updated successfully!"
     });
   } catch (error) {
-    next(error)
+    res.status(400).json(error);
   }
 }
+
 
 exports.deleteUser = async (req, res, next) => {
   try {
@@ -156,3 +181,6 @@ exports.deleteUser = async (req, res, next) => {
     next(error)
   }
 }
+
+
+

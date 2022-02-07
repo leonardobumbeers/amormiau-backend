@@ -1,5 +1,5 @@
 const express = require('express');
-
+var logger = require('morgan');
 const bodyParser = require('body-parser');
 const jwt = require('jsonwebtoken');
 const path = require('path')
@@ -17,7 +17,7 @@ const app = express();
 
 
 const PORT = process.env.PORT || 3000;
-
+app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
