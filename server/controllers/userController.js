@@ -32,29 +32,12 @@ exports.grantAccess = function (action, resource) {
 exports.allowIfLoggedin = async (req, res, next) => {
   try {
     const user = res.locals.loggedInUser;
-    if (!user)
-      return res.status(401).json({
-        error: "You need to be logged in to access this route"
-      });
+    if (!user) throw new Error("You need to be logged in to access this route")
     req.user = user;
     next();
   } catch (error) {
     next(error);
   }
-}
-
-exports.index = async (req, res, next) => {
-  try {
-    const users = await User.find().populate('cat');
-    res.send(users);
-  } catch (error) {
-    next(error.message);
-  }
-}
-
-exports.show = async (req, res) => {
-  const users = await User.findById(req.params.id).populate('cat');
-  res.send(users);
 }
 
 exports.signup = async (req, res, next) => {
@@ -64,9 +47,7 @@ exports.signup = async (req, res, next) => {
 
     let user = await User.findOne({ email });
     if (user) {
-      return res.status(400).json({
-        error: "This email already exists, try a new one"
-      }).end()
+      throw new Error('User already exists');
     }
     const hashedPassword = await hashPassword(password);
     const newUser = new User({
@@ -92,8 +73,8 @@ exports.signup = async (req, res, next) => {
       data: newUser,
       message: "You have signed up successfully"
     }).status(200)
-  } catch (error) {
-    next(error);
+  } catch (e) {
+    next(e);
   }
 }
 
@@ -103,9 +84,9 @@ exports.login = async (req, res, next) => {
   try {
     let user = await User.findOne({ email });
     if (!user)
-      res.status(401).json({ error: 'Incorrect email or password' });
+      throw new Error('Incorrect email or password')
     const validPassword = await validatePassword(password, user.password);
-    if (!validPassword) return next(new Error('Password is not correct'))
+    if (!validPassword) throw new Error('Incorrect email or password')
     const accessToken = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
       expiresIn: "1d"
     });
@@ -114,8 +95,8 @@ exports.login = async (req, res, next) => {
       data: { email: user.email, role: user.role },
       accessToken
     })
-  } catch (error) {
-    next(error);
+  } catch (e) {
+    next(e);
   }
 }
 
@@ -123,8 +104,8 @@ exports.getUsers = async (req, res, next) => {
   try {
     const users = await User.find().populate('cats')
     res.status(200).json({ data: users });
-  } catch (error) {
-    next(error);
+  } catch (e) {
+    next(e);
   }
 }
 
@@ -132,12 +113,12 @@ exports.getUser = async (req, res, next) => {
   try {
     const userId = req.params.userId;
     const user = await User.findById(userId).populate('cats')
-    if (!user) return next(new Error('User does not exist'));
+    if (!user) throw new Error('User not found');
     res.status(200).json({
       data: user
     });
-  } catch (error) {
-    next(error)
+  } catch (e) {
+    next(e)
   }
 }
 
@@ -150,12 +131,15 @@ exports.updateUser = async (req, res, next) => {
     const hashedPassword = await hashPassword(updatedPassword);
     const userId = req.params.userId;
 
+    const user = await User.findById(userId)
+    if(!user) throw new Error('User not found');
+
     var userNew = await User.findById(userId)
       .then(user => {
         user.role = updatedRole || "basic";
         user.email = updatedEmail;
         user.password = hashedPassword;
-        user.cats = updatedCats;
+        user.cats = updatedCats;       
         return user.save()
       })
 
@@ -163,8 +147,8 @@ exports.updateUser = async (req, res, next) => {
       data: userNew,
       message: "User has been updated successfully!"
     });
-  } catch (error) {
-    res.status(400).json(error);
+  } catch (e) {
+    next(e)
   }
 }
 
@@ -177,8 +161,8 @@ exports.deleteUser = async (req, res, next) => {
       data: null,
       message: 'User has been deleted'
     });
-  } catch (error) {
-    next(error)
+  } catch (e) {
+    next(e)
   }
 }
 

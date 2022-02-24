@@ -10,7 +10,7 @@ require('../config/database.js');
 require("dotenv").config({
   path: path.join(__dirname, "../.env")
 });
-
+var cors = require('cors');
 
 
 const app = express();
@@ -20,6 +20,7 @@ const PORT = process.env.PORT || 3000;
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+app.use(cors());
 
 app.use(async (req, res, next) => {
   if (req.headers["x-access-token"]) {
@@ -41,9 +42,36 @@ app.use(async (req, res, next) => {
     next();
   }
 });
-
 app.use('/', routes);
 app.use('/admin', adminRouter);
+app.use(function (error, req, res, next) {
+  if (error.message === "Cat already exists") {
+    res.status(409).json({ error: "Cat already exists" });
+  }
+  if (error.message === "Cat not found") {
+    res.status(404).json({ error: "Cat not found" });
+  }
+  if (error.message === "Cat already adopted") {
+    res.status(409).json({ error: "Cat already adopted" });
+  }
+  if (error.message === "User already exists") {
+    res.status(409).json({ error: "User already exists" });
+  }
+  if (error.message === "User not found") {
+    res.status(404).json({ error: "User not found" });
+  }
+  if (error.message === "Incorrect email or password") {
+    res.status(401).json({ error: "Incorrect email or password" });
+  }
+  if (error.message === "You need to be logged in to access this route") {
+    res.status(401).json({ error: "You need to be logged in to access this route" });
+  }
+  if (error.message === "You don't have enough permission to perform this action") {
+    res.status(401).json({ error: "You don't have enough permission to perform this action" });
+  }
+  res.status(500).json({ error: 'Internal server error' });
+});
+
 
 
 

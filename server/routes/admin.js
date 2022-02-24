@@ -13,12 +13,14 @@ router.put('/adoptCat/:catId', userController.allowIfLoggedin, userController.gr
 
 router.put('/cat/:catId', userController.allowIfLoggedin, userController.grantAccess('updateAny', 'profile'), adminController.updateCat);
 
+router.delete('/cat/:catId', userController.allowIfLoggedin, userController.grantAccess('deleteAny', 'profile'), adminController.deleteCat);
+
 router.get('/user/:userId', userController.allowIfLoggedin, userController.getUser);
 
 router.get('/users', userController.allowIfLoggedin, userController.grantAccess('readAny', 'profile'), userController.getUsers);
 
-router.put('/:userId', userController.allowIfLoggedin, userController.grantAccess('updateAny', 'profile'), userController.updateUser);
+router.put('/user/:userId', userController.allowIfLoggedin, userController.grantAccess('updateAny', 'profile'), userController.updateUser);
 
-router.delete('/:userId', userController.allowIfLoggedin, userController.grantAccess('deleteAny', 'profile'), userController.deleteUser);
+router.delete('/user/:userId', userController.allowIfLoggedin, userController.grantAccess('deleteAny', 'profile'), userController.deleteUser);
 
 module.exports = router;

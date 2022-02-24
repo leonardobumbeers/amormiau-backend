@@ -4,25 +4,12 @@ const jwt = require('jsonwebtoken');
 const userController = require('../controllers/userController');
 
 const { roles } = require('../roles');
-const { updateMany } = require('../models/userModel');
-
-async function hashPassword(password) {
-  return await bcrypt.hash(password, 10);
-}
-
-async function validatePassword(plainPassword, hashedPassword) {
-  return await bcrypt.compare(plainPassword, hashedPassword);
-}
 
 exports.grantAccess = function (action, resource) {
   return async (req, res, next) => {
     try {
       const permission = roles.can(req.user.role)[action](resource);
-      if (!permission.granted) {
-        return res.status(401).json({
-          error: "You don't have enough permission to perform this action"
-        });
-      }
+      if (!permission.granted) throw new Error("You don't have enough permission to perform this action");
       next()
     } catch (error) {
       next(error)
@@ -33,18 +20,15 @@ exports.grantAccess = function (action, resource) {
 exports.allowIfLoggedin = async (req, res, next) => {
   try {
     const user = res.locals.loggedInUser;
-    if (!user)
-      return res.status(401).json({
-        error: "You need to be logged in to access this route"
-      });
+    if (!user) throw new Error("You need to be logged in to access this route");
     req.user = user;
     next();
-  } catch (error) {
-    next(error);
+  } catch (e) {
+    next(e);
   }
 }
 
-exports.registerCat = async (req, res) => {
+exports.registerCat = async (req, res, next) => {
   try {
 
     const { name, birthDate, weight, sterilized, specialCat, description } = req.body
@@ -63,14 +47,18 @@ exports.registerCat = async (req, res) => {
       data: newCat,
       message: "Cat is registered successfully"
     })
-  } catch (error) {
-    res.status(500).json({ error: 'Internal error, please try again' });
+  } catch (e) {
+    next(e)
   }
 }
 
 exports.getCats = async (req, res, next) => {
-  const cats = await Cat.find();
-  res.status(200).json({ data: cats });
+  try {
+    const cats = await Cat.find();
+    res.status(200).json({ data: cats })
+  } catch (e) {
+    next(e)
+  };
 }
 
 
@@ -78,12 +66,12 @@ exports.getCat = async (req, res, next) => {
   try {
     const catId = req.params.userId;
     const cat = await User.findById(catId).populate('user');
-    if (!cat) return next(new Error('Cat does not exist'));
+    if (!cat) throw new Error("Cat not found");
     res.status(200).json({
       data: cat
     });
-  } catch (error) {
-    next(error)
+  } catch (e) {
+    next(e)
   }
 }
 
@@ -100,7 +88,8 @@ exports.updateCat = async (req, res, next) => {
 
 
     const catId = req.params.catId;
-
+    const cat = await Cat.findById(catId)
+    if (!cat) throw new Error("Cat not found");
 
     var catNew = await Cat.findById(catId)
       .then(cat => {
@@ -120,8 +109,8 @@ exports.updateCat = async (req, res, next) => {
     });
 
 
-  } catch (error) {
-    res.status(400).json(error);
+  } catch (e) {
+    next(e)
   }
 }
 
@@ -131,17 +120,21 @@ exports.adoptCat = async (req, res, next) => {
     const catId = req.params.catId;
     const userId = req.body.userId
 
-    
-    await User.findOneAndUpdate({ cats: {$in: [catId] }}, { $set: { cats: []}})
 
+    await User.findOneAndUpdate({ cats: { $in: [catId] } }, { $set: { cats: [] } })
+    const user = await User.findById(userId)
+    if(!user) throw new Error('User not found')
+
+    const cat = await User.findById(catId)
+    if (!cat) throw new Error("Cat not found");
 
     var catNew = await Cat.findById(catId)
-      .then(cat => {    
+      .then(cat => {
         cat.available = false;
         return cat.save()
       })
-      var userNew = await User.findById(userId)
-      .then(user => {         
+    var userNew = await User.findById(userId)
+      .then(user => {
         user.cats = catId;
         return user.save()
       })
@@ -151,7 +144,22 @@ exports.adoptCat = async (req, res, next) => {
       message: "Cat and User updated successfully"
     });
 
-  } catch (error) {
-    next(error)
+  } catch (e) {
+    next(e)
+  }
+}
+
+exports.deleteCat = async (req, res, next) => {
+  try {
+    const catId = req.params.catId;
+    const cat = await Cat.findById(catId);
+    if (!cat) throw new Error("Cat not found");
+    await Cat.findByIdAndRemove(catId);
+    res.status(200).json({
+      data: cat,
+      message: "Cat is deleted successfully"
+    });
+  } catch (e) {
+    next(e)
   }
 }
