@@ -127,6 +127,5 @@ describe('Testing users CRUD', () => {
         const users = await response.json();
         expect(response.status).toBe(200);
         expect(users.data).toBeTruthy();
-        console.log(JSON.stringify(users.data, null, 2))
     });
 });

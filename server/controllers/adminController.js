@@ -64,7 +64,7 @@ exports.getCats = async (req, res, next) => {
 
 exports.getCat = async (req, res, next) => {
   try {
-    const catId = req.params.userId;
+    const catId = req.params.catId;
     const cat = await User.findById(catId).populate('user');
     if (!cat) throw new Error("Cat not found");
     res.status(200).json({
