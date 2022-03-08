@@ -65,7 +65,7 @@ exports.getCats = async (req, res, next) => {
 exports.getCat = async (req, res, next) => {
   try {
     const catId = req.params.catId;
-    const cat = await User.findById(catId).populate('user');
+    const cat = await Cat.findById(catId)
     if (!cat) throw new Error("Cat not found");
     res.status(200).json({
       data: cat
@@ -156,7 +156,7 @@ exports.deleteCat = async (req, res, next) => {
     if (!cat) throw new Error("Cat not found");
     await Cat.findByIdAndRemove(catId);
     res.status(200).json({
-      data: cat,
+      data: null,
       message: "Cat is deleted successfully"
     });
   } catch (e) {

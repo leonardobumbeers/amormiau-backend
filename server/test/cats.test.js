@@ -53,7 +53,6 @@ describe('Testing cats CRUD', () => {
 
     test('should get registered cat by id', async () => {
 
-        // const response = await fetch(`http://localhost:3000/admin/cat/${global.catId}`, {
         const response = await fetch(`http://localhost:3000/admin/cat/${global.catId}`, {
             method: 'GET',
             headers: {
@@ -104,7 +103,7 @@ describe('Testing cats CRUD', () => {
         const responseBody = await response.json()
         expect(response.status).toBe(200)
         expect(responseBody.data).toBeNull()
-        // expect(responseBody.message).toBe('cat has been deleted')
+        expect(responseBody.message).toBe('Cat is deleted successfully')
     })
 
 
