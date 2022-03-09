@@ -32,20 +32,15 @@ jobs:
       with:
         mongodb-version: ${{ matrix.mongodb-version }}
 
-    - uses: some-action@v1
-      env:
-       API_KEY: ${{ secrets.API_KEY }}
-       SECRET_ID: ${{ secrets.SECRET_ID }}
-
     - name: Install dependencies
       run: npm install
- 
    
     - name: Create env file
       run: |
           touch .env
           echo =${{ secrets.ENV_SECRET }} >> .env
           cat .env
+          
     - name: Start Server
       run: node server/server.js
 
