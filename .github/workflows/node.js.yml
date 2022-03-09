@@ -49,9 +49,11 @@ jobs:
           echo ADMIN_PASSWORD=${{ secrets.ADMIN_PASSWORD }} >> .env
           
       
-    - name: Create admin
+    - name: Install dependencies
+      run: npm ci
+      
+    - name: Run tests
       run: |
-          mongosh
-          show dbs
-          use amorMiau
+          node server/server.js
+          npm test
         
