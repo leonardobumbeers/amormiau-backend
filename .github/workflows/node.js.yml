@@ -67,10 +67,11 @@ jobs:
            "state": "SP",
            "role": "admin"
           })
+          exit
           
     - name: Run tests
       run: |
-          mongo
+          mongosh
           db.users.find().pretty()
 
     
