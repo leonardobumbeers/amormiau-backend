@@ -38,10 +38,10 @@ jobs:
     - name: Create env file
       run: |
           touch .env
-          echo =${{ secrets.JWT_SECRET }} > .env
-          echo =${{ secrets.MONGODB }} > .env
-          echo =${{ secrets.ADMIN_EMAIL }} > .env
-          echo =${{ secrets.ADMIN_PASSWORD }} > .env
+          echo =${{ secrets.JWT_SECRET }} >> .env
+          echo =${{ secrets.MONGODB }} >> .env
+          echo =${{ secrets.ADMIN_EMAIL }} >> .env
+          echo =${{ secrets.ADMIN_PASSWORD }} >> .env
           cat .env
     - name: Start Server
       run: node server/server.js
