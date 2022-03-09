@@ -52,6 +52,7 @@ jobs:
     - name: Create admin
       run: |
           mongosh
+          show dbs
           use amorMiau
           db.createCollection("users")
           db.users.insertOne({
