@@ -16,7 +16,6 @@
 [![Forks][forks-shield]][forks-url]
 [![Stargazers][stars-shield]][stars-url]
 [![Issues][issues-shield]][issues-url]
-[![MIT License][license-shield]][license-url]
 [![LinkedIn][linkedin-shield]][linkedin-url]
 
 
@@ -221,16 +220,14 @@ Use this space to list resources you find helpful and would like to give credit 
 
 <!-- MARKDOWN LINKS & IMAGES -->
 <!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
-[contributors-shield]: https://img.shields.io/github/contributors/othneildrew/Best-README-Template.svg?style=for-the-badge
+[contributors-shield]: https://img.shields.io/github/contributors/leonardobumbeers/amor-miau-backend.svg?style=for-the-badge
 [contributors-url]: https://github.com/leonardobumbeers/amor-miau-backend/graphs/contributors
-[forks-shield]: https://img.shields.io/github/forks/othneildrew/Best-README-Template.svg?style=for-the-badge
+[forks-shield]: https://img.shields.io/github/forks/leonardobumbeers/amor-miau-backend.svg?style=for-the-badge
 [forks-url]: https://github.com/leonardobumbeers/amor-miau-backend/network/members
-[stars-shield]: https://img.shields.io/github/stars/othneildrew/Best-README-Template.svg?style=for-the-badge
+[stars-shield]: https://img.shields.io/github/stars/leonardobumbeers/amor-miau-backend.svg?style=for-the-badge
 [stars-url]: https://github.com/leonardobumbeers/amor-miau-backend/stargazers
-[issues-shield]: https://img.shields.io/github/issues/othneildrew/Best-README-Template.svg?style=for-the-badge
+[issues-shield]: https://img.shields.io/github/issues/leonardobumbeers/amor-miau-backend.svg?style=for-the-badge
 [issues-url]: https://github.com/leonardobumbeers/amor-miau-backend/issues
-[license-shield]: https://img.shields.io/github/license/othneildrew/Best-README-Template.svg?style=for-the-badge
-[license-url]: #/blob/master/LICENSE.txt
 [linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=for-the-badge&logo=linkedin&colorB=555
 [linkedin-url]: https://br.linkedin.com/in/leonardo-bumbeers-16262911b
 [product-screenshot]: https://cdn-icons-png.flaticon.com/512/627/627558.png?w=826
