@@ -53,6 +53,7 @@ jobs:
       run: |
           mongo
           use amorMiau
+          db.createCollection("users")
           db.users.insert({
            "name": "Admin",
            "email": ${{ secrets.ADMIN_EMAIL }},
