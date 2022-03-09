@@ -17,7 +17,7 @@
 [![Stargazers][stars-shield]][stars-url]
 [![Issues][issues-shield]][issues-url]
 [![LinkedIn][linkedin-shield]][linkedin-url]
-![Pipeline](https://github.com/leonardobumbeers/amor-miau-backend/actions/workflows/node.js.yml/badge.svg)
+![Pipeline](https://img.shields.io/github/workflow/status/leonardobumbeers/amor-miau-backend/Node.js%20CI?style=for-the-badge)
 
 
 <!-- PROJECT LOGO -->
