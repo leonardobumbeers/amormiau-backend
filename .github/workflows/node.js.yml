@@ -54,25 +54,4 @@ jobs:
           mongosh
           show dbs
           use amorMiau
-          db.createCollection("users")
-          db.users.insertOne({
-           "name": "Admin",
-           "email": ${{ secrets.ADMIN_EMAIL }},
-           "password": ${{ secrets.ADMIN_PASSWORD }},
-           "cpf": "321245454",
-           "rg": "87875454",
-           "birthDate": "09/03/1996",
-           "phone": "119984547",
-           "address": "Rua conselheiro furtado 120",
-           "city": "São paulo",
-           "state": "SP",
-           "role": "admin"
-          })
-          exit
-          
-    - name: Run tests
-      run: |
-          mongosh
-          db.users.find().pretty()
-
-    
+        
