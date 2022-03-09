@@ -42,9 +42,27 @@ jobs:
           echo MONGODB_URL=${{ secrets.MONGODB }} >> .env
           echo ADMIN_EMAIL=${{ secrets.ADMIN_EMAIL }} >> .env
           echo ADMIN_PASSWORD=${{ secrets.ADMIN_PASSWORD }} >> .env
-          cat .env
           
-    - name: Start Server
-      run: node server/server.js
+      
+    - name: Create admin
+      run: |
+          db.users.insert({
+           "name": "Admin",
+           "email": ${{ secrets.ADMIN_EMAIL }},
+           "password": ${{ secrets.ADMIN_PASSWORD },
+           "cpf": "321245454",
+           "rg": "87875454",
+           "birthDate": "09/03/1996",
+           "phone": "119984547",
+           "address": "Rua conselheiro furtado 120",
+           "city": "São paulo",
+           "state": "SP",
+           "role": "admin"
+          })
+          
+    - name: Run tests
+      run: |
+          mongo
+          db.users.find().pretty()
 
     
