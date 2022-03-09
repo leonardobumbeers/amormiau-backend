@@ -3,7 +3,6 @@ const userData = require('../util/userData');
 require("dotenv/config");
 
 beforeAll(async () => {
-
     const responseLogin = await fetch('http://localhost:3000/login', {
         method: 'POST',
         headers: {
@@ -15,16 +14,15 @@ beforeAll(async () => {
         })
     })
     const responseToken = await responseLogin.json()
-    global.token = responseToken.accessToken;    
+    return global.token = responseToken.accessToken;  
 })
-
 
 describe('Testing users CRUD', () => {
 
     test('should register a new user', async () => {
 
         const user = new userData();
-        
+
         const response = await fetch('http://localhost:3000/signup', {
             method: 'POST',
             headers: {
@@ -114,7 +112,7 @@ describe('Testing users CRUD', () => {
         expect(responseBody.message).toBe('User has been deleted')
     })
 
-    
+
 
     test('should return a list of all users', async () => {
         const response = await fetch('http://localhost:3000/admin/users', {
