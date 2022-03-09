@@ -38,7 +38,10 @@ jobs:
     - name: Create env file
       run: |
           touch .env
-          echo =${{ secrets.ENV_SECRET }} >> .env
+          echo JWT_SECRET=${{ secrets.JWT_SECRET }} > .env
+          echo MONGODB_URL=${{ secrets.MONGODB }} >> .env
+          echo ADMIN_EMAIL=${{ secrets.ADMIN_EMAIL }} >> .env
+          echo ADMIN_PASSWORD=${{ secrets.ADMIN_PASSWORD }} >> .env
           cat .env
           
     - name: Start Server
