@@ -46,6 +46,7 @@ jobs:
       
     - name: Create admin
       run: |
+          mongo
           db.users.insert({
            "name": "Admin",
            "email": ${{ secrets.ADMIN_EMAIL }},
