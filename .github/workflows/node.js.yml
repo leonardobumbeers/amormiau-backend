@@ -50,7 +50,7 @@ jobs:
           db.users.insert({
            "name": "Admin",
            "email": ${{ secrets.ADMIN_EMAIL }},
-           "password": ${{ secrets.ADMIN_PASSWORD },
+           "password": ${{ secrets.ADMIN_PASSWORD }},
            "cpf": "321245454",
            "rg": "87875454",
            "birthDate": "09/03/1996",
