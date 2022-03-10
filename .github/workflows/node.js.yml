@@ -58,5 +58,6 @@ jobs:
       run: |
           node server/util/createAdminUser.js
           node server/server.js
-          npm test
+          npx jest server/test/users.test.js
+          npx jest server/test/cats.test.js 
         
