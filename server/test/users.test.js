@@ -3,7 +3,7 @@ const userData = require('../util/userData');
 require("dotenv/config");
 
 beforeAll(async () => {
-    const responseLogin = await fetch('https://amor-miau-backend.vercel.app/login', {
+    const responseLogin = await fetch('https://leonardobumbeers/amor-miau-backend/login', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -23,7 +23,7 @@ describe('Testing users CRUD', () => {
 
         const user = new userData();
 
-        const response = await fetch('https://amor-miau-backend.vercel.app/signup', {
+        const response = await fetch('leonardobumbeers/amor-miau-backend/signup', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
