@@ -21,7 +21,7 @@ beforeAll(async () => {
 
 describe('Testing cats CRUD', () => {
 
-    test('should register a new cat', async () => {
+    test.only('should register a new cat', async () => {
 
         const cat = new catData();
 
