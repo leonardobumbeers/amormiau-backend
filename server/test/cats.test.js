@@ -4,7 +4,7 @@ require("dotenv/config");
 
 beforeAll(async () => {
 
-    const responseLogin = await fetch('https://amor-miau-backend.vercel.app/login', {
+    const responseLogin = await fetch('https://leonardobumbeers/amor-miau-backend/login', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -25,7 +25,7 @@ describe('Testing cats CRUD', () => {
 
         const cat = new catData();
 
-        const response = await fetch('https://amor-miau-backend.vercel.app/admin/registerCat', {
+        const response = await fetch('https://leonardobumbeers/amor-miau-backendadmin/registerCat', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
