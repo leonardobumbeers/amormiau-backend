@@ -5,7 +5,7 @@ const mongoose = require('mongoose');
 
 
 // make a connection 
-mongoose.connect(`${process.env.MONGODB_URL}`, { useNewUrlParser: true }, { useUnifiedTopology: true });
+mongoose.connect(process.env.MONGODB_URL, { useNewUrlParser: true }, { useUnifiedTopology: true });
 
 // get reference to database
 var db = mongoose.connection;
@@ -26,9 +26,7 @@ db.once('open', function () {
     user.save()
 
 
-}).then(() => {
-    console.log("Admin user created!")
-    mongoose.connection.close();
-}).catch(err => {
-    console.log(err)
 })
+console.log("Admin user created!")
+mongoose.connection.close();
+
