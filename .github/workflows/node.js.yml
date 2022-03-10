@@ -47,6 +47,8 @@ jobs:
           echo MONGODB_URL=${{ secrets.MONGODB }} >> .env
           echo ADMIN_EMAIL=${{ secrets.ADMIN_EMAIL }} >> .env
           echo ADMIN_PASSWORD=${{ secrets.ADMIN_PASSWORD }} >> .env
+          echo ADMIN_PASSWORD_HASHED=${{ secrets.ADMIN_PASSWORD_HASHED }} >> .env
+          echo ADMIN_ACCESS_TOKEN=${{ secrets.ADMIN_ACCESS_TOKEN }} >> .env
           
       
     - name: Install dependencies
@@ -54,6 +56,7 @@ jobs:
       
     - name: Run tests
       run: |
+          node server/util/createAdminUser.js
           node server/server.js
           npm test
         
