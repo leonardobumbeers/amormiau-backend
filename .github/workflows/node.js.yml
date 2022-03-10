@@ -45,8 +45,9 @@ jobs:
       run: npm ci
       
     - name: Vercel Action
-      run: |
+      run: |          
           npm i -g vercel
+          npm install @vercel/node
           vercel --prod --debug --confirm --token ${{ secrets.VERCEL_TOKEN }} 
     #  uses: amondnet/vercel-action@v20.0.1
    #   with:
