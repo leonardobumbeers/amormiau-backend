@@ -21,7 +21,8 @@
     "jsonwebtoken": "^8.5.1",
     "mongoose": "^5.7.9",
     "morgan": "^1.10.0",
-    "nodemon": "^2.0.15"
+    "nodemon": "^2.0.15",
+    "vercel": "^24.0.0"
   },
   "devDependencies": {
     "@faker-js/faker": "^6.0.0-alpha.7",

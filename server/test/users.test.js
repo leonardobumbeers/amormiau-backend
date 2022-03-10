@@ -3,7 +3,7 @@ const userData = require('../util/userData');
 require("dotenv/config");
 
 beforeAll(async () => {
-    const responseLogin = await fetch('http://localhost:3000/login', {
+    const responseLogin = await fetch('https://amor-miau-backend.vercel.app/login', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -23,7 +23,7 @@ describe('Testing users CRUD', () => {
 
         const user = new userData();
 
-        const response = await fetch('http://localhost:3000/signup', {
+        const response = await fetch('https://amor-miau-backend.vercel.app/signup', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -55,7 +55,7 @@ describe('Testing users CRUD', () => {
 
     test('should get registered user by id', async () => {
 
-        const response = await fetch(`http://localhost:3000/admin/user/${global.userId}`, {
+        const response = await fetch(`https://amor-miau-backend.vercel.app/admin/user/${global.userId}`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -71,7 +71,7 @@ describe('Testing users CRUD', () => {
 
         const user = new userData();
 
-        const response = await fetch(`http://localhost:3000/admin/user/${global.userId}`, {
+        const response = await fetch(`https://amor-miau-backend.vercel.app/admin/user/${global.userId}`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
@@ -99,7 +99,7 @@ describe('Testing users CRUD', () => {
     })
 
     test('should delete registered user by id', async () => {
-        const response = await fetch(`http://localhost:3000/admin/user/${global.userId}`, {
+        const response = await fetch(`https://amor-miau-backend.vercel.app/admin/user/${global.userId}`, {
             method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json',
@@ -115,7 +115,7 @@ describe('Testing users CRUD', () => {
 
 
     test('should return a list of all users', async () => {
-        const response = await fetch('http://localhost:3000/admin/users', {
+        const response = await fetch('https://amor-miau-backend.vercel.app/admin/users', {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
