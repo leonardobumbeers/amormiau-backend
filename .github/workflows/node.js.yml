@@ -65,3 +65,6 @@ jobs:
        vercel-org-id: ${{ secrets.ORG_ID}}
        scope: leonardobumbeers
        
+    - name: tests 
+      run: npm test
+       
