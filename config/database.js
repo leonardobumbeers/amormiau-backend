@@ -1,12 +1,10 @@
 const mongoose = require('mongoose');
 const path = require('path')
 mongoose.Promise = global.Promise;
-require("dotenv").config({
-    path: path.join(__dirname, "../.env")
-});
+require("dotenv/config");
 
 
-mongoose.connect(process.env.MONGODB_URL,
+mongoose.connect(`${process.env.MONGODB_URL}`,
     {
         useNewUrlParser: true,
         useUnifiedTopology: true,
