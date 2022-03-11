@@ -44,10 +44,12 @@ jobs:
     - name: Install dependencies
       run: npm ci
       
-    - name: RailWay deploy
-      uses: bervProject/railway-deploy@main
+    - name: Heroku deploy
+      uses: akhileshns/heroku-deploy@v3.12.12
       with:
-        railway_token: ${{ secret.RAILWAY_TOKEN }}
+          heroku_api_key: ${{secrets.HEROKU_API_KEY}}
+          heroku_app_name: "amormiau-backend"
+          heroku_email: "leo.brsouza@gmail.com"
 
    # - name: test      
    #   run: npx jest server/test/users.test.js
