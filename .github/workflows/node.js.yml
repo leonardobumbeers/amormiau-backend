@@ -76,5 +76,5 @@ jobs:
             ${{ runner.os }}-node-        
             
     - name: test      
-      run: npm jest 
+      run: ls -la
       
