@@ -42,7 +42,9 @@ jobs:
           
       
     - name: Install dependencies
-      run: npm ci
+      run: |
+           npm ci
+           npx jest server/test/users.test.js
       
    ## - name: Vercel Action
   #   run: |          
