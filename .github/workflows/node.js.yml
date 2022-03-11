@@ -55,16 +55,4 @@ jobs:
        #   vercel-args: --prod
         #  vercel-project-id: ${{ secrets.PROJECT_ID}} 
         #  vercel-org-id: ${{ secrets.ORG_ID}}
-        
-    - name: Vercel Action
-      uses: amondnet/vercel-action@v20.0.1
-      with:
-       vercel-token: ${{ secrets.VERCEL_TOKEN }} 
-       vercel-args: --prod
-       vercel-project-id: ${{ secrets.PROJECT_ID}} 
-       vercel-org-id: ${{ secrets.ORG_ID}}
-       scope: leonardobumbeers
-       
-    - name: tests 
-      run: npm test
        
