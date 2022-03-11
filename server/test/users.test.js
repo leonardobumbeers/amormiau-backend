@@ -3,7 +3,9 @@ const userData = require('../util/userData');
 require("dotenv/config");
 
 beforeAll(async () => {
-    const responseLogin = await fetch('http://amor-miau-backend-production.up.railway.app/login', {
+    const URL = 'https://amormiau-backend.herokuapp.com'
+    global.url = URL
+    const responseLogin = await fetch(`${global.url}/login`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -23,7 +25,7 @@ describe('Testing users CRUD', () => {
 
         const user = new userData();
 
-        const response = await fetch('http://amor-miau-backend-production.up.railway.app/signup', {
+        const response = await fetch(`${global.url}/signup`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -55,7 +57,7 @@ describe('Testing users CRUD', () => {
 
     test('should get registered user by id', async () => {
 
-        const response = await fetch(`https://amor-miau-backend.vercel.app/admin/user/${global.userId}`, {
+        const response = await fetch(`${global.url}/admin/user/${global.userId}`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -71,7 +73,7 @@ describe('Testing users CRUD', () => {
 
         const user = new userData();
 
-        const response = await fetch(`https://amor-miau-backend.vercel.app/admin/user/${global.userId}`, {
+        const response = await fetch(`${global.url}/admin/user/${global.userId}`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
@@ -99,7 +101,7 @@ describe('Testing users CRUD', () => {
     })
 
     test('should delete registered user by id', async () => {
-        const response = await fetch(`https://amor-miau-backend.vercel.app/admin/user/${global.userId}`, {
+        const response = await fetch(`${global.url}/admin/user/${global.userId}`, {
             method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json',
@@ -115,7 +117,7 @@ describe('Testing users CRUD', () => {
 
 
     test('should return a list of all users', async () => {
-        const response = await fetch('https://amor-miau-backend.vercel.app/admin/users', {
+        const response = await fetch(`${global.url}/admin/users`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',

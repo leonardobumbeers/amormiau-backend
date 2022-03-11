@@ -3,8 +3,9 @@ const catData = require('../util/catData');
 require("dotenv/config");
 
 beforeAll(async () => {
-
-    const responseLogin = await fetch('https://leonardobumbeers/amor-miau-backend/login', {
+    const URL = 'https://amormiau-backend.herokuapp.com'
+    global.url = URL
+    const responseLogin = await fetch(`${global.url}/login`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -25,7 +26,7 @@ describe('Testing cats CRUD', () => {
 
         const cat = new catData();
 
-        const response = await fetch('https://leonardobumbeers/amor-miau-backendadmin/registerCat', {
+        const response = await fetch(`${global.url}/admin/registerCat`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -53,7 +54,7 @@ describe('Testing cats CRUD', () => {
 
     test('should get registered cat by id', async () => {
 
-        const response = await fetch(`https://amor-miau-backend.vercel.app/admin/cat/${global.catId}`, {
+        const response = await fetch(`${global.url}/admin/cat/${global.catId}`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -69,7 +70,7 @@ describe('Testing cats CRUD', () => {
 
         const cat = new catData();
 
-        const response = await fetch(`https://amor-miau-backend.vercel.app/admin/cat/${global.catId}`, {
+        const response = await fetch(`${global.url}/admin/cat/${global.catId}`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
@@ -93,7 +94,7 @@ describe('Testing cats CRUD', () => {
     })
 
     test('should delete registered cat by id', async () => {
-        const response = await fetch(`https://amor-miau-backend.vercel.app/admin/cat/${global.catId}`, {
+        const response = await fetch(`${global.url}/admin/cat/${global.catId}`, {
             method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json',
@@ -109,7 +110,7 @@ describe('Testing cats CRUD', () => {
 
 
     test('should return a list of all cats', async () => {
-        const response = await fetch('https://amor-miau-backend.vercel.app/admin/cats', {
+        const response = await fetch(`${global.url}/admin/cats`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',

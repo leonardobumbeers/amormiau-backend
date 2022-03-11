@@ -50,9 +50,10 @@ jobs:
           heroku_api_key: ${{secrets.HEROKU_API_KEY}}
           heroku_app_name: "amormiau-backend"
           heroku_email: "leo.brsouza@gmail.com"
-
-   # - name: test      
-   #   run: npx jest server/test/users.test.js
+  
+  tests:
+   - name: test      
+     run: npm jest 
       
    ## - name: Vercel Action
   #   run: |          
