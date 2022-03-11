@@ -21,7 +21,7 @@ beforeAll(async () => {
 
 describe('Testing users CRUD', () => {
 
-    test.only('should register a new user', async () => {
+    test('should register a new user', async () => {
 
         const user = new userData();
 

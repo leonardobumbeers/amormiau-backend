@@ -22,7 +22,7 @@ beforeAll(async () => {
 
 describe('Testing cats CRUD', () => {
 
-    test.only('should register a new cat', async () => {
+    test('should register a new cat', async () => {
 
         const cat = new catData();
 
