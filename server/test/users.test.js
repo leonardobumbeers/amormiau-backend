@@ -3,7 +3,7 @@ const userData = require('../util/userData');
 require("dotenv/config");
 
 beforeAll(async () => {
-    const responseLogin = await fetch('https://leonardobumbeers/amor-miau-backend/login', {
+    const responseLogin = await fetch('http://amor-miau-backend-production.up.railway.app/login', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -23,7 +23,7 @@ describe('Testing users CRUD', () => {
 
         const user = new userData();
 
-        const response = await fetch('leonardobumbeers/amor-miau-backend/signup', {
+        const response = await fetch('http://amor-miau-backend-production.up.railway.app/signup', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
