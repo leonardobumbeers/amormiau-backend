@@ -1,4 +1,5 @@
 const fetch = require('cross-fetch');
+const fs = require('mz/fs');
 const catData = require('../util/catData');
 require("dotenv/config");
 
@@ -25,38 +26,50 @@ describe('Testing cats CRUD', () => {
     test.only('should register a new cat', async () => {
 
         const cat = new catData();
+        const filePath = `${__dirname}/tmp/uploads/cat.jpg`;
 
-        const response = await fetch(`${global.url}/admin/registerCat`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'x-access-token': global.token
-            },
-            body: JSON.stringify({
-                name: cat.randomName,
-                birthDate: cat.randomBirthDate,
-                weight: cat.randomWeight,
-                sterilized: cat.randomSterilized,
-                specialCat: cat.randomSpecialCat,
-                description: cat.randomDescription,
-                available: cat.randomAvailable
-                // ,
-                // images: [
-                //     {   
-                //         null,
-                //         null,
-                //     } 
-                // ]      
+        fs.exists(filePath)
+            .then((exists) => {
+                if (!exists) throw new Error('file does not exist');
+
+
+                const response = await fetch(`${global.url}/admin/registerCat`, {
+                    method: 'POST',
+                    headers: {
+                        // 'Content-Type': 'application/json',
+                        'x-access-token': global.token
+                    },
+                    body: JSON.stringify({
+                        name: cat.randomName,
+                        birthDate: cat.randomBirthDate,
+                        weight: cat.randomWeight,
+                        sterilized: cat.randomSterilized,
+                        specialCat: cat.randomSpecialCat,
+                        description: cat.randomDescription,
+                        available: cat.randomAvailable,
+                        images: [{
+                            fileName: 'cat.jpg',
+                            key: 'cat.jpg',
+                            size: '123',
+                            dest: filePath
+                        }]
+                        // ,
+                        // images: [
+                        //     {   
+                        //         null,
+                        //         null,
+                        //     } 
+                        // ]      
+                    })
+                })
+                const responseBody = await response.json()
+                expect(response.status).toBe(200)
+                expect(responseBody.data.name).toBe(cat.randomName)
+                expect(responseBody.message).toBe('Cat is registered successfully')
+
+                const catId = responseBody.data._id
+                global.catId = catId;
             })
-        })
-        const responseBody = await response.json()
-        expect(response.status).toBe(200)
-        expect(responseBody.data.name).toBe(cat.randomName)
-        expect(responseBody.message).toBe('Cat is registered successfully')
-
-        const catId = responseBody.data._id
-        global.catId = catId;
-
     })
 
     test('should get registered cat by id', async () => {

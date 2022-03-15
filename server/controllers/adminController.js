@@ -55,7 +55,8 @@ exports.registerCat = async (req, res, next) => {
       newCat.images.push({
         fileName: image.originalname,
         key: image.key,
-        size: image.size
+        size: image.size,
+        dest: image.destination
       })
     }
 

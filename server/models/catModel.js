@@ -38,7 +38,8 @@ const CatSchema = new Schema({
     {
       fileName: String,
       key: String,
-      size: Number
+      size: Number,
+      dest: String
     }
   ]
 }, {
