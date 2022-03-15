@@ -22,7 +22,7 @@ beforeAll(async () => {
 
 describe('Testing cats CRUD', () => {
 
-    test('should register a new cat', async () => {
+    test.only('should register a new cat', async () => {
 
         const cat = new catData();
 
@@ -40,6 +40,13 @@ describe('Testing cats CRUD', () => {
                 specialCat: cat.randomSpecialCat,
                 description: cat.randomDescription,
                 available: cat.randomAvailable
+                // ,
+                // images: [
+                //     {   
+                //         null,
+                //         null,
+                //     } 
+                // ]      
             })
         })
         const responseBody = await response.json()

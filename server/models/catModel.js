@@ -12,19 +12,19 @@ const CatSchema = new Schema({
     required: true
   },
 
-  weight: { 
+  weight: {
     type: String
   },
 
-  sterilized: { 
+  sterilized: {
     type: Boolean
   },
 
-  specialCat: { 
+  specialCat: {
     type: Boolean
   },
 
-  description: { 
+  description: {
     type: String
   },
 
@@ -32,7 +32,15 @@ const CatSchema = new Schema({
     type: Boolean,
     default: true,
     required: true
-  }
+  },
+
+  images: [
+    {
+      fileName: String,
+      key: String,
+      size: Number
+    }
+  ]
 }, {
   timestamps: true
 });

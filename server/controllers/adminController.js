@@ -2,7 +2,8 @@ const User = require('../models/userModel');
 const Cat = require('../models/catModel');
 const jwt = require('jsonwebtoken');
 const userController = require('../controllers/userController');
-
+const multer = require("multer");
+const multerConfig = require("../util/multer");
 const { roles } = require('../roles');
 
 exports.grantAccess = function (action, resource) {
@@ -31,7 +32,12 @@ exports.allowIfLoggedin = async (req, res, next) => {
 exports.registerCat = async (req, res, next) => {
   try {
 
-    const { name, birthDate, weight, sterilized, specialCat, description } = req.body
+    const { name, birthDate, weight, sterilized, specialCat, description, available } = req.body
+    const images = {} = req.files;
+
+    console.log(JSON.stringify(images, null, 2));
+    if(images.length === 0) throw new Error('No images were uploaded')
+    
 
     const newCat = new Cat({
       name: name,
@@ -39,9 +45,20 @@ exports.registerCat = async (req, res, next) => {
       weight: weight,
       sterilized: sterilized,
       specialCat: specialCat,
-      available: true,
-      description: description
+      available: available || true,
+      description: description,
+      images: []
+
     });
+
+    for(let image of images){
+      newCat.images.push({
+        fileName: image.originalname,
+        key: image.key,
+        size: image.size
+      })
+    }
+
     await newCat.save();
     res.json({
       data: newCat,
@@ -85,7 +102,6 @@ exports.updateCat = async (req, res, next) => {
     const updatedSpecialCat = req.body.specialCat;
     const updatedDescription = req.body.description;
     const updatedAvailable = req.body.available;
-
 
     const catId = req.params.catId;
     const cat = await Cat.findById(catId)

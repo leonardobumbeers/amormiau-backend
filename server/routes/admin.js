@@ -2,8 +2,11 @@ const express = require('express');
 const router = express.Router();
 const userController = require('../controllers/userController');
 const adminController = require('../controllers/adminController');
+const multer = require("multer");
+const multerConfig = require("../util/multer");
 
-router.post('/registerCat', userController.allowIfLoggedin, userController.grantAccess('updateAny', 'profile'), adminController.registerCat);
+
+router.post('/registerCat', multer(multerConfig).array("images"), userController.allowIfLoggedin, userController.grantAccess('updateAny', 'profile'), adminController.registerCat);
 
 router.get('/cats', userController.allowIfLoggedin, userController.grantAccess('readAny', 'profile'), adminController.getCats);
 

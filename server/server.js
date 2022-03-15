@@ -13,6 +13,7 @@ require("dotenv").config({
 var cors = require('cors');
 
 
+
 const app = express();
 
 
@@ -21,6 +22,10 @@ app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cors());
+app.use(
+  "/files",
+  express.static(path.resolve(__dirname, "..", "tmp", "uploads"))
+);
 
 app.use(async (req, res, next) => {
   if (req.headers["x-access-token"]) {
@@ -42,6 +47,9 @@ app.use(async (req, res, next) => {
     next();
   }
 });
+
+
+
 app.use('/', routes);
 app.use('/admin', adminRouter);
 app.use(function (error, req, res, next) {
@@ -69,7 +77,11 @@ app.use(function (error, req, res, next) {
   if (error.message === "You don't have enough permission to perform this action") {
     res.status(401).json({ error: "You don't have enough permission to perform this action" });
   }
+  if(error.message === "No images were uploaded"){
+    res.status(422).json({ error: "No images were uploaded" });
+  }
   res.status(500).json({ error: 'Internal server error' });
+ 
 });
 
 
