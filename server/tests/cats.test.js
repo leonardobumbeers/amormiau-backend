@@ -28,9 +28,7 @@ describe('Testing cats CRUD', () => {
         const cat = new catData();
         const filePath = `${__dirname}/tmp/uploads/cat.jpg`;
 
-        fs.exists(filePath)
-            .then((exists) => {
-                if (!exists) throw new Error('file does not exist');
+
 
 
                 const response = await fetch(`${global.url}/admin/registerCat`, {

@@ -1,4 +1,5 @@
 const express = require('express');
+const rateLimit = require('express-rate-limit');
 var logger = require('morgan');
 const bodyParser = require('body-parser');
 const jwt = require('jsonwebtoken');
@@ -15,7 +16,11 @@ var cors = require('cors');
 
 
 const app = express();
-
+const apiRequestLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100 // limit each IP to 100 requests per windowMs
+});
+app.use(apiRequestLimiter);
 
 const PORT = process.env.PORT || 3000;
 app.use(logger('dev'));
