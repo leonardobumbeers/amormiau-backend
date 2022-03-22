@@ -2,13 +2,59 @@ name: Node.js CI
 
 on:
   push:
-    branches: [ master ]
+    branches: [master]
   pull_request:
-    branches: [ master ]
+    branches: [master]
 
 jobs:
-  deploy:
+  deploy_locally:
+    runs-on: ubuntu-latest
 
+    strategy:
+      matrix:
+        node-version: [12.x, 14.x, 16.x]
+        mongodb-version: ['5.0']
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: Start MongoDB
+        uses: supercharge/mongodb-github-action@1.7.0
+        with:
+          mongodb-version: ${{ matrix.mongodb-version }}
+
+      - name: Prepare cache
+        uses: actions/cache@v2
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+
+      - name: Create env file
+        run: |
+          touch .env
+          echo JWT_SECRET=${{ secrets.JWT_SECRET }} > .env
+          echo MONGODB_URL=${{ secrets.MONGODB_LOCAL }} >> .env
+          echo ADMIN_EMAIL=${{ secrets.ADMIN_EMAIL }} >> .env
+          echo ADMIN_PASSWORD=${{ secrets.ADMIN_PASSWORD }} >> .env
+          echo ADMIN_PASSWORD_HASHED=${{ secrets.ADMIN_PASSWORD_HASHED }} >> .env
+          echo ADMIN_ACCESS_TOKEN=${{ secrets.ADMIN_ACCESS_TOKEN }} >> .env
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: test
+        run: |
+          npm run dev
+          npx jest --ci
+
+  deploy_heroku:
+    needs: deploy_locally
     runs-on: ubuntu-latest
 
     strategy:
@@ -16,22 +62,22 @@ jobs:
         node-version: [12.x, 14.x, 16.x]
 
     steps:
-    - uses: actions/checkout@v2
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v2
-      with:
-        node-version: ${{ matrix.node-version }}   
-        
-    - name: Prepare cache
-      uses: actions/cache@v2
-      with:
+      - uses: actions/checkout@v2
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: Prepare cache
+        uses: actions/cache@v2
+        with:
           path: ~/.npm
           key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
-            ${{ runner.os }}-node-        
-   
-    - name: Create env file
-      run: |
+            ${{ runner.os }}-node-
+
+      - name: Create env file
+        run: |
           touch .env
           echo JWT_SECRET=${{ secrets.JWT_SECRET }} > .env
           echo MONGODB_URL=${{ secrets.MONGODB }} >> .env
@@ -39,61 +85,13 @@ jobs:
           echo ADMIN_PASSWORD=${{ secrets.ADMIN_PASSWORD }} >> .env
           echo ADMIN_PASSWORD_HASHED=${{ secrets.ADMIN_PASSWORD_HASHED }} >> .env
           echo ADMIN_ACCESS_TOKEN=${{ secrets.ADMIN_ACCESS_TOKEN }} >> .env
-          mkdir tmp
-          cd tmp
-          mkdir uploads
-      
-    - name: Install dependencies
-      run: npm ci
-      
-    - name: Heroku deploy
-      uses: akhileshns/heroku-deploy@v3.12.12
-      with:
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Heroku deploy
+        uses: akhileshns/heroku-deploy@v3.12.12
+        with:
           heroku_api_key: ${{secrets.HEROKU_API_KEY}}
-          heroku_app_name: "amormiau-backend"
-          heroku_email: "leo.brsouza@gmail.com"
-          
-
-  tests:
-    needs: deploy
-    runs-on: ubuntu-latest
-
-    strategy:
-      matrix:
-        node-version: [12.x, 14.x, 16.x]
-
-    steps:
-    - uses: actions/checkout@v2
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v2
-      with:
-        node-version: ${{ matrix.node-version }}   
-        
-    - name: Prepare cache
-      uses: actions/cache@v2
-      with:
-          path: ~/.npm
-          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-node-        
-   
-    - name: Create env file
-      run: |
-          touch .env
-          echo JWT_SECRET=${{ secrets.JWT_SECRET }} > .env
-          echo MONGODB_URL=${{ secrets.MONGODB }} >> .env
-          echo ADMIN_EMAIL=${{ secrets.ADMIN_EMAIL }} >> .env
-          echo ADMIN_PASSWORD=${{ secrets.ADMIN_PASSWORD }} >> .env
-          echo ADMIN_PASSWORD_HASHED=${{ secrets.ADMIN_PASSWORD_HASHED }} >> .env
-          echo ADMIN_ACCESS_TOKEN=${{ secrets.ADMIN_ACCESS_TOKEN }} >> .env
-          mkdir tmp
-          cd tmp
-          mkdir uploads
-          
-      
-    - name: Install dependencies
-      run: npm ci
-            
-    - name: test      
-      run: npm test
-      
+          heroku_app_name: 'amormiau-backend'
+          heroku_email: 'leo.brsouza@gmail.com'

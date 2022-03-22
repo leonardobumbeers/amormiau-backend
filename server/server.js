@@ -82,11 +82,11 @@ app.use(function (error, req, res, next) {
   if (error.message === "You don't have enough permission to perform this action") {
     res.status(401).json({ error: "You don't have enough permission to perform this action" });
   }
-  if(error.message === "No images were uploaded"){
+  if (error.message === "No images were uploaded") {
     res.status(422).json({ error: "No images were uploaded" });
   }
   res.status(500).json({ error: 'Internal server error' });
- 
+
 });
 
 
@@ -96,3 +96,6 @@ app.use(function (error, req, res, next) {
 app.listen(PORT, () => {
   console.log('Server is listening on Port:', PORT)
 })
+
+
+module.exports = app;

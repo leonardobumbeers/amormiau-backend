@@ -35,9 +35,9 @@ exports.registerCat = async (req, res, next) => {
     const { name, birthDate, weight, sterilized, specialCat, description, available } = req.body
     const images = {} = req.files;
 
-    console.log(JSON.stringify(images, null, 2));
-    if(images.length === 0) throw new Error('No images were uploaded')
-    
+    // console.log(JSON.stringify(images, null, 2));
+    // if(images.length === 0) throw new Error('No images were uploaded')
+
 
     const newCat = new Cat({
       name: name,
@@ -51,7 +51,7 @@ exports.registerCat = async (req, res, next) => {
 
     });
 
-    for(let image of images){
+    for (let image of images) {
       newCat.images.push({
         fileName: image.originalname,
         key: image.key,
@@ -140,7 +140,7 @@ exports.adoptCat = async (req, res, next) => {
 
     await User.findOneAndUpdate({ cats: { $in: [catId] } }, { $set: { cats: [] } })
     const user = await User.findById(userId)
-    if(!user) throw new Error('User not found')
+    if (!user) throw new Error('User not found')
 
     const cat = await User.findById(catId)
     if (!cat) throw new Error("Cat not found");

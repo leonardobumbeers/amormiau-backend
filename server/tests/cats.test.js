@@ -1,10 +1,15 @@
 const fetch = require('cross-fetch');
 const fs = require('mz/fs');
+const path = require('path');
+const FormData = require('form-data');
+const supertest = require('supertest');
 const catData = require('../util/catData');
+const { createReadStream } = require('fs');
 require("dotenv/config");
 
 beforeAll(async () => {
-    const URL = 'https://amormiau-backend.herokuapp.com'
+    // const URL = 'https://amormiau-backend.herokuapp.com'
+    const URL = 'http://localhost:3000'
     global.url = URL
     const responseLogin = await fetch(`${global.url}/login`, {
         method: 'POST',
@@ -23,51 +28,35 @@ beforeAll(async () => {
 
 describe('Testing cats CRUD', () => {
 
-    test.only('should register a new cat', async () => {
+    test('should register a new cat', async () => {
 
         const cat = new catData();
-        const filePath = `${__dirname}/tmp/uploads/cat.jpg`;
+        const filePath = path.join(__dirname, '../../tmp/uploads/img.example.jpg');
 
 
+        const response = await supertest(global.url)
+            .post('/admin/registerCat')
+            .set('x-access-token', global.token)
+            .set('content-Type', 'multipart/form-data')
+            .field('name', cat.randomName)
+            .field('birthDate', `${cat.randomBirthDate}`)
+            .field('weight', cat.randomWeight)
+            .field('sterilized', cat.randomSterilized)
+            .field('specialCat', cat.randomSpecialCat)
+            .field('description', cat.randomDescription)
+            .field('available', cat.randomAvailable)
+            .attach('images', filePath, { filename: 'img.example.jpg', type: 'jpg' })
 
 
-                const response = await fetch(`${global.url}/admin/registerCat`, {
-                    method: 'POST',
-                    headers: {
-                        // 'Content-Type': 'application/json',
-                        'x-access-token': global.token
-                    },
-                    body: JSON.stringify({
-                        name: cat.randomName,
-                        birthDate: cat.randomBirthDate,
-                        weight: cat.randomWeight,
-                        sterilized: cat.randomSterilized,
-                        specialCat: cat.randomSpecialCat,
-                        description: cat.randomDescription,
-                        available: cat.randomAvailable,
-                        images: [{
-                            fileName: 'cat.jpg',
-                            key: 'cat.jpg',
-                            size: '123',
-                            dest: filePath
-                        }]
-                        // ,
-                        // images: [
-                        //     {   
-                        //         null,
-                        //         null,
-                        //     } 
-                        // ]      
-                    })
-                })
-                const responseBody = await response.json()
-                expect(response.status).toBe(200)
-                expect(responseBody.data.name).toBe(cat.randomName)
-                expect(responseBody.message).toBe('Cat is registered successfully')
+        const responseText = await response.text;
+        const responseJson = JSON.parse(responseText);
 
-                const catId = responseBody.data._id
-                global.catId = catId;
-            })
+        expect(response.status).toBe(200)
+
+
+        const catId = responseJson.data._id
+        global.catId = catId;
+
     })
 
     test('should get registered cat by id', async () => {
@@ -140,3 +129,4 @@ describe('Testing cats CRUD', () => {
         expect(cats.data).toBeTruthy();
     });
 });
+

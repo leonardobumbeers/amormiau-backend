@@ -3,7 +3,8 @@ const userData = require('../util/userData');
 require("dotenv/config");
 
 beforeAll(async () => {
-    const URL = 'https://amormiau-backend.herokuapp.com'
+    // const URL = 'https://amormiau-backend.herokuapp.com'
+    const URL = 'http://localhost:3000'
     global.url = URL
     const responseLogin = await fetch(`${global.url}/login`, {
         method: 'POST',
@@ -16,7 +17,7 @@ beforeAll(async () => {
         })
     })
     const responseToken = await responseLogin.json()
-    return global.token = responseToken.accessToken;  
+    return global.token = responseToken.accessToken;
 })
 
 describe('Testing users CRUD', () => {
