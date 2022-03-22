@@ -50,7 +50,10 @@ jobs:
 
       - name: test
         run: |
-          npm run dev
+          node server/util/createAdminUser.js
+          npm start &
+          sleep 10 &&
+          curl http://localhost:3000 &&
           npx jest --ci
 
   deploy_heroku:
