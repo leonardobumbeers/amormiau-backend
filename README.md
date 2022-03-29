@@ -23,20 +23,20 @@
 <!-- PROJECT LOGO -->
 <br />
 <div align="center">
-  <a href="https://instagram.fcgh10-1.fna.fbcdn.net/v/t51.2885-19/273861623_103365732231488_4315510342268732084_n.jpg?stp=dst-jpg_s150x150&_nc_ht=instagram.fcgh10-1.fna.fbcdn.net&_nc_cat=108&_nc_ohc=a58TjUg0DKcAX_ZADgY&edm=ABfd0MgBAAAA&ccb=7-4&oh=00_AT-dUxYWbhEYPqZpfc3D4KVIsYHLQYJTdn2t1iL7RMFGFQ&oe=622F787F&_nc_sid=7bff83">
-    <img src="https://instagram.fcgh10-1.fna.fbcdn.net/v/t51.2885-19/273861623_103365732231488_4315510342268732084_n.jpg?stp=dst-jpg_s150x150&_nc_ht=instagram.fcgh10-1.fna.fbcdn.net&_nc_cat=108&_nc_ohc=a58TjUg0DKcAX_ZADgY&edm=ABfd0MgBAAAA&ccb=7-4&oh=00_AT-dUxYWbhEYPqZpfc3D4KVIsYHLQYJTdn2t1iL7RMFGFQ&oe=622F787F&_nc_sid=7bff83" alt="Logo" width="80" height="80">
+  <a href="https://img.icons8.com/external-justicon-flat-justicon/200/external-cat-dog-and-cat-justicon-flat-justicon-4.png">
+    <img src="https://img.icons8.com/external-justicon-flat-justicon/200/external-cat-dog-and-cat-justicon-flat-justicon-4.png" alt="Logo" width="auto" height="140">
   </a>
 
   <h3 align="center">NGO - Amor Miau</h3>
 
   <p align="center">
-    Amor Miau is an animal welfare NGO,that sterilizes and vaccinates stray cats,
+    Amor Miau is an animal welfare NGO, that sterilizes and vaccinates stray cats,
     gives them medical treatment if required, and make adoptions once they are healthy.
     <br />
-    <a href="#"><strong>Explore the docs »</strong></a>
+    <a href="http://amormiau-backend.herokuapp.com/"><strong>Explore the docs »</strong></a>
     <br />
     <br />
-    <a href"#">View Demo</a>
+    <a href="http://amormiau-backend.herokuapp.com/">View Demo</a>
     ·
     <a href="https://github.com/leonardobumbeers/amor-miau-backend/issues">Report Bug</a>
     ·
@@ -77,7 +77,12 @@
 <!-- ABOUT THE PROJECT -->
 ## About The Project
 
-[![Product Name Screen Shot][product-screenshot]](https://example.com)
+<!-- [![Product Name Screen Shot][product-screenshot]](https://example.com) -->
+<div align="center">
+  <a href="https://cdn-icons-png.flaticon.com/512/627/627558.png?w=826">
+    <img src="https://cdn-icons-png.flaticon.com/512/627/627558.png?w=826" alt="API" width="auto" height="400">
+  </a>
+</div>  
 <!--
 There are many great README templates available on GitHub; however, I didn't find one that really suited my needs so I created this enhanced one. I want to create a README template so amazing that it'll be the last one you ever need -- I think this is it.
 
