@@ -4,25 +4,21 @@ const path = require('path');
 const FormData = require('form-data');
 const supertest = require('supertest');
 const catData = require('../util/catData');
-const { createReadStream } = require('fs');
+const { grantAccess, clearDatabase } = require('../util/grantAccess');
 require("dotenv/config");
 
 beforeAll(async () => {
-    // const URL = 'https://amormiau-backend.herokuapp.com'
     const URL = 'http://localhost:3000'
     global.url = URL
-    const responseLogin = await fetch(`${global.url}/login`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-            email: process.env.ADMIN_EMAIL,
-            password: process.env.ADMIN_PASSWORD
-        })
+    await grantAccess.then((result) => {
+        global.accessToken = result.accessToken;
+    }).catch((err) => {
+        console.log('err: ' + err);
     })
-    const responseToken = await responseLogin.json()
-    global.token = responseToken.accessToken;
+})
+
+afterAll(async () => {
+    await clearDatabase();
 })
 
 
@@ -36,7 +32,7 @@ describe('Testing cats CRUD', () => {
 
         const response = await supertest(global.url)
             .post('/admin/registerCat')
-            .set('x-access-token', global.token)
+            .set('x-access-token', global.accessToken)
             .set('content-Type', 'multipart/form-data')
             .field('name', cat.randomName)
             .field('birthDate', `${cat.randomBirthDate}`)
@@ -65,7 +61,7 @@ describe('Testing cats CRUD', () => {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
-                'x-access-token': global.token
+                'x-access-token': global.accessToken
             }
         })
         const responseBody = await response.json()
@@ -81,7 +77,7 @@ describe('Testing cats CRUD', () => {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
-                'x-access-token': global.token
+                'x-access-token': global.accessToken
             },
             body: JSON.stringify({
                 name: cat.randomName,
@@ -105,7 +101,7 @@ describe('Testing cats CRUD', () => {
             method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json',
-                'x-access-token': global.token
+                'x-access-token': global.accessToken
             }
         })
         const responseBody = await response.json()
@@ -121,7 +117,7 @@ describe('Testing cats CRUD', () => {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
-                'x-access-token': global.token
+                'x-access-token': global.accessToken
             }
         })
         const cats = await response.json();

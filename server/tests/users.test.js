@@ -1,28 +1,25 @@
 const fetch = require('cross-fetch');
 const userData = require('../util/userData');
+const { grantAccess, clearDatabase } = require('../util/grantAccess');
 require("dotenv/config");
 
 beforeAll(async () => {
-    // const URL = 'https://amormiau-backend.herokuapp.com'
     const URL = 'http://localhost:3000'
     global.url = URL
-    const responseLogin = await fetch(`${global.url}/login`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-            email: process.env.ADMIN_EMAIL,
-            password: process.env.ADMIN_PASSWORD
-        })
+    await grantAccess.then((result) => {
+        global.accessToken = result.accessToken;
+    }).catch((err) => {
+        console.log('err: ' + err);
     })
-    const responseToken = await responseLogin.json()
-    return global.token = responseToken.accessToken;
+})
+
+afterAll(async () => {
+    await clearDatabase();
 })
 
 describe('Testing users CRUD', () => {
 
-    test('should register a new user', async () => {
+    it('should register a new user', async () => {
 
         const user = new userData();
 
@@ -56,13 +53,14 @@ describe('Testing users CRUD', () => {
 
     })
 
-    test('should get registered user by id', async () => {
+    it('should get registered user by id', async () => {
 
         const response = await fetch(`${global.url}/admin/user/${global.userId}`, {
+            // const response = await fetch(`${global.url}/admin/user/623bc14fabce1a49ea963c6e`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
-                'x-access-token': global.token
+                'x-access-token': global.accessToken
             }
         })
         const responseBody = await response.json()
@@ -70,7 +68,7 @@ describe('Testing users CRUD', () => {
         expect(responseBody.data).toBeTruthy()
     })
 
-    test('should update registered user by id', async () => {
+    it('should update registered user by id', async () => {
 
         const user = new userData();
 
@@ -78,7 +76,7 @@ describe('Testing users CRUD', () => {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
-                'x-access-token': global.token
+                'x-access-token': global.accessToken
             },
             body: JSON.stringify({
                 name: user.randomName,
@@ -101,12 +99,12 @@ describe('Testing users CRUD', () => {
 
     })
 
-    test('should delete registered user by id', async () => {
+    it('should delete registered user by id', async () => {
         const response = await fetch(`${global.url}/admin/user/${global.userId}`, {
             method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json',
-                'x-access-token': global.token
+                'x-access-token': global.accessToken
             }
         })
         const responseBody = await response.json()
@@ -117,12 +115,13 @@ describe('Testing users CRUD', () => {
 
 
 
-    test('should return a list of all users', async () => {
+    it('should return a list of all users', async () => {
         const response = await fetch(`${global.url}/admin/users`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
-                'x-access-token': global.token
+                'x-access-token': global.accessToken
+
             }
         })
         const users = await response.json();

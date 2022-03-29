@@ -132,14 +132,14 @@ exports.updateUser = async (req, res, next) => {
     const userId = req.params.userId;
 
     const user = await User.findById(userId)
-    if(!user) throw new Error('User not found');
+    if (!user) throw new Error('User not found');
 
     var userNew = await User.findById(userId)
       .then(user => {
         user.role = updatedRole || "basic";
         user.email = updatedEmail;
         user.password = hashedPassword;
-        user.cats = updatedCats;       
+        user.cats = updatedCats;
         return user.save()
       })
 
