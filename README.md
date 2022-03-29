@@ -16,7 +16,7 @@
 [![Forks][forks-shield]][forks-url]
 [![Stargazers][stars-shield]][stars-url]
 [![Issues][issues-shield]][issues-url]
-![Pipeline](https://img.shields.io/github/workflow/status/leonardobumbeers/amor-miau-backend/Node.js%20CI?style=for-the-badge)
+![Pipeline](https://img.shields.io/github/workflow/status/leonardobumbeers/amormiau-backend/Node.js%20CI?style=for-the-badge)
 [![LinkedIn][linkedin-shield]][linkedin-url]
 
 
