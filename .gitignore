@@ -11,7 +11,7 @@ lerna-debug.log\*
 
 # tmp/
 
-.DS_Store
+\*.DS_Store\*
 
 # Diagnostic reports (https://nodejs.org/api/report.html)
 

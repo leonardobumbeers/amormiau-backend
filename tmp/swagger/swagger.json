@@ -1,0 +1,595 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "version": "1.0",
+    "title": "Amor Miau API Documentation",
+    "contact": {
+      "email": "leo.brsouza@gmail.com"
+    },
+    "description": "Amor Miau is an animal welfare NGO, if you want to contribute learn more: https://bit.ly/githubAmorMiau",
+    "license": {
+      "name": "MIT license",
+      "url": "https://opensource.org/licenses/MIT"
+    }
+  },
+  "host": "localhost:3000",
+  "basePath": "/",
+  "securityDefinitions": {
+    "ApiKeyAuth": {
+      "type": "apiKey",
+      "in": "header",
+      "name": "x-access-token"
+    }
+  },
+  "schemes": ["http"],
+  "consumes": ["application/json"],
+  "produces": ["application/json"],
+  "paths": {
+    "/admin/registerCat": {
+      "post": {
+        "summary": "Register Cat",
+        "tags": ["Cat"],
+        "operationId": "RegisterCat",
+        "deprecated": false,
+        "consumes": ["multipart/form-data"],
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "name": "name",
+            "in": "formData",
+            "description": "Cat's name",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "birthDate",
+            "in": "formData",
+            "description": "Cat's birth date",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "weight",
+            "in": "formData",
+            "description": "Cat's weight",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "sterilized",
+            "in": "formData",
+            "description": "Cat's sterilized",
+            "required": false,
+            "type": "boolean"
+          },
+          {
+            "name": "specialCat",
+            "in": "formData",
+            "description": "Special cat",
+            "required": false,
+            "type": "boolean"
+          },
+          {
+            "name": "available",
+            "in": "formData",
+            "description": "Cat's available",
+            "required": true,
+            "type": "boolean"
+          },
+          {
+            "name": "description",
+            "in": "formData",
+            "description": "Cat's description",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "images",
+            "in": "formData",
+            "description": "Cat's image",
+            "required": false,
+            "type": "file"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "headers": {}
+          }
+        },
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ]
+      }
+    },
+    "/signup": {
+      "post": {
+        "summary": "Sign up",
+        "tags": ["User"],
+        "operationId": "Signup",
+        "deprecated": false,
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "name": "Body",
+            "in": "body",
+            "required": true,
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/SignupRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "headers": {}
+          }
+        }
+      }
+    },
+    "/login": {
+      "post": {
+        "summary": "Login",
+        "tags": ["User"],
+        "operationId": "Login",
+        "deprecated": false,
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "name": "Body",
+            "in": "body",
+            "required": true,
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/LoginRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "headers": {}
+          }
+        }
+      }
+    },
+    "/admin/users": {
+      "get": {
+        "summary": "Get all users",
+        "tags": ["User"],
+        "operationId": "Getallusers",
+        "deprecated": false,
+        "produces": ["application/json"],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "headers": {}
+          }
+        },
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ]
+      }
+    },
+    "/admin/cats": {
+      "get": {
+        "summary": "Get all cats",
+        "tags": ["Cat"],
+        "operationId": "Getallcats",
+        "deprecated": false,
+        "produces": ["application/json"],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "headers": {}
+          }
+        },
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ]
+      }
+    },
+    "/admin/cat/{catId}": {
+      "get": {
+        "summary": "Get cat by ID",
+        "tags": ["Cat"],
+        "operationId": "GetcatbyID",
+        "deprecated": false,
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "name": "x-access-token",
+            "in": "header",
+            "required": true,
+            "type": "string",
+            "description": ""
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "headers": {}
+          }
+        },
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ]
+      },
+      "put": {
+        "summary": "Update Cat",
+        "tags": ["Cat"],
+        "operationId": "UpdateCat",
+        "deprecated": false,
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "name": "Body",
+            "in": "body",
+            "required": true,
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/UpdateCatRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "headers": {}
+          }
+        },
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ]
+      },
+      "delete": {
+        "summary": "Delete Cat",
+        "tags": ["Cat"],
+        "operationId": "DeleteCat",
+        "deprecated": false,
+        "produces": ["application/json"],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "headers": {}
+          }
+        },
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ]
+      }
+    },
+    "/admin/user/{userId}": {
+      "get": {
+        "summary": "Get user by ID",
+        "tags": ["User"],
+        "operationId": "GetuserbyID",
+        "deprecated": false,
+        "produces": ["application/json"],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "headers": {}
+          }
+        },
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ]
+      },
+      "put": {
+        "summary": "Update user",
+        "tags": ["User"],
+        "operationId": "Updateuser",
+        "deprecated": false,
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "name": "Body",
+            "in": "body",
+            "required": true,
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/UpdateuserRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "headers": {}
+          }
+        },
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ]
+      },
+      "delete": {
+        "summary": "Delete user",
+        "tags": ["User"],
+        "operationId": "Deleteuser",
+        "deprecated": false,
+        "produces": ["application/json"],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "headers": {}
+          }
+        },
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ]
+      }
+    },
+    "/admin/adoptCat/{catId}": {
+      "put": {
+        "summary": "User adopt and associate with a cat",
+        "tags": ["Adopt"],
+        "operationId": "Useradoptandassociatewithacat",
+        "deprecated": false,
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "name": "Body",
+            "in": "body",
+            "required": true,
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/UseradoptandassociatewithacatRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "headers": {}
+          }
+        },
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ]
+      }
+    }
+  },
+  "definitions": {
+    "RegisterCatRequest": {
+      "title": "RegisterCatRequest",
+      "example": {
+        "name": "Meow",
+        "birthDate": "2018-01-01",
+        "weight": "3.5kg",
+        "sterilized": true,
+        "specialCat": true,
+        "available": true,
+        "description": "White Cat with black eyes",
+        "images": [
+          {
+            "_id": "5a4b8f3f8f8b9f0014d8b9f0",
+            "fileName": "cat1.jpg",
+            "key": "e989835165b9f770d0b59f1253a266e7-cat1.jpg",
+            "size": 9145,
+            "dest": "tmp/uploads/e989835165b9f770d0b59f1253a266e7-cat1.jpg"
+          }
+        ]
+      },
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "birthDate": {
+          "type": "string"
+        },
+        "weight": {
+          "type": "string"
+        },
+        "sterilized": {
+          "type": "boolean"
+        },
+        "specialCat": {
+          "type": "boolean"
+        },
+        "available": {
+          "type": "boolean"
+        },
+        "description": {
+          "type": "string"
+        },
+        "images": {
+          "type": "array",
+          "items": {
+            "type": "file"
+          }
+        }
+      },
+      "required": [
+        "name",
+        "birthDate",
+        "weight",
+        "sterilized",
+        "specialCat",
+        "available",
+        "description"
+      ]
+    },
+    "SignupRequest": {
+      "title": "SignupRequest",
+      "example": {
+        "name": "John Doe",
+        "email": "test@user.com",
+        "password": "123456",
+        "cpf": "321245454",
+        "rg": "87875454",
+        "birthDate": "1980-01-01",
+        "phone": "+55 (11) 98765-4321",
+        "address": "142 Wall Street, Suite 330, Boston, MA 02108",
+        "city": "Boston",
+        "state": "MA",
+        "role": "basic"
+      },
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "password": {
+          "type": "string"
+        },
+        "cpf": {
+          "type": "string"
+        },
+        "rg": {
+          "type": "string"
+        },
+        "birthDate": {
+          "type": "string"
+        },
+        "phone": {
+          "type": "string"
+        },
+        "address": {
+          "type": "string"
+        },
+        "city": {
+          "type": "string"
+        },
+        "state": {
+          "type": "string"
+        },
+        "role": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "name",
+        "email",
+        "password",
+        "cpf",
+        "rg",
+        "birthDate",
+        "phone",
+        "address",
+        "city",
+        "state",
+        "role"
+      ]
+    },
+    "LoginRequest": {
+      "title": "LoginRequest",
+      "example": {
+        "email": "test@user.com",
+        "password": "123456"
+      },
+      "type": "object",
+      "properties": {
+        "email": {
+          "type": "string"
+        },
+        "password": {
+          "type": "string"
+        }
+      },
+      "required": ["email", "password"]
+    },
+    "UpdateuserRequest": {
+      "title": "UpdateuserRequest",
+      "example": {
+        "role": "basic",
+        "email": "test@user.com",
+        "password": "123456",
+        "cats": "61fda2315f0cbb4fe32d500b"
+      },
+      "type": "object",
+      "properties": {
+        "role": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "password": {
+          "type": "string"
+        },
+        "cats": {
+          "type": "string"
+        }
+      },
+      "required": ["role", "email", "password", "cats"]
+    },
+    "UpdateCatRequest": {
+      "title": "UpdateCatRequest",
+      "example": {
+        "name": "Meow",
+        "birthDate": "03/02/2017",
+        "weight": "6kg",
+        "sterilized": true,
+        "specialCat": true,
+        "available": true
+      },
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "birthDate": {
+          "type": "string"
+        },
+        "weight": {
+          "type": "string"
+        },
+        "sterilized": {
+          "type": "boolean"
+        },
+        "specialCat": {
+          "type": "boolean"
+        },
+        "available": {
+          "type": "boolean"
+        }
+      },
+      "required": ["name", "birthDate", "available"]
+    },
+    "UseradoptandassociatewithacatRequest": {
+      "title": "UseradoptandassociatewithacatRequest",
+      "example": {
+        "userId": "62018871912e773e9aaf3f49"
+      },
+      "type": "object",
+      "properties": {
+        "userId": {
+          "type": "string"
+        }
+      },
+      "required": ["userId"]
+    }
+  },
+  "tags": []
+}

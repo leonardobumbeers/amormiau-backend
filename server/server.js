@@ -11,7 +11,11 @@ require('../config/database.js');
 require("dotenv").config({
   path: path.join(__dirname, "../.env")
 });
+const swaggerUi = require('swagger-ui-express');
+const swaggerDocument = require('../tmp/swagger/swagger.json');
+const options = require('../tmp/swagger/custom');
 var cors = require('cors');
+
 
 
 
@@ -52,8 +56,10 @@ app.use(async (req, res, next) => {
     next();
   }
 });
-
-
+app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument, options));
+app.get('/', (req, res) => {
+  res.redirect('/docs');
+});
 
 app.use('/', routes);
 app.use('/admin', adminRouter);
