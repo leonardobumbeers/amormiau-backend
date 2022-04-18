@@ -6,13 +6,13 @@
     "contact": {
       "email": "leo.brsouza@gmail.com"
     },
-    "description": "Amor Miau is an animal welfare NGO, if you want to contribute learn more: https://bit.ly/githubAmorMiau",
+    "description": "Amor Miau is an animal welfare NGO. learn more: https://bit.ly/githubAmorMiau",
     "license": {
       "name": "MIT license",
       "url": "https://opensource.org/licenses/MIT"
     }
   },
-  "host": "localhost:3000",
+  "host": "amormiau-backend.herokuapp.com",
   "basePath": "/",
   "securityDefinitions": {
     "ApiKeyAuth": {
