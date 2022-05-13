@@ -10,8 +10,8 @@ module.exports = function () {
     this.randomSpecialCat = faker.datatype.boolean();
     this.randomDescription = faker.lorem.sentences();
     this.randomAvailable = faker.datatype.boolean();
-    this.randomSociable = faker.datatype.integer({ min: 0, max: 5 });
-    this.randomPlayful = faker.datatype.integer({ min: 0, max: 5 });
-    this.randomAffectionate = faker.datatype.integer({ min: 0, max: 5 });
+    this.randomSociable = faker.datatype.number({ min: 0, max: 5 });
+    this.randomPlayful = faker.datatype.number({ min: 0, max: 5 });
+    this.randomAffectionate = faker.datatype.number({ min: 0, max: 5 });
 }
 
