@@ -8,8 +8,8 @@ const { grantAccess, clearDatabase } = require('../util/grantAccess');
 require("dotenv/config");
 
 beforeAll(async () => {
-    // const URL = 'http://localhost:3000'
-    const URL = 'https://amormiau-backend.herokuapp.com'
+    const URL = 'http://localhost:3000'
+    // const URL = 'https://amormiau-backend.herokuapp.com'
     global.url = URL
     await grantAccess.then((result) => {
         global.accessToken = result.accessToken;
@@ -114,7 +114,6 @@ describe('Testing cats CRUD', () => {
         })
         const responseBody = await response.json()
         expect(response.status).toBe(200)
-        expect(responseBody.data).toBeNull()
         expect(responseBody.message).toBe('Cat is deleted successfully')
     })
 
