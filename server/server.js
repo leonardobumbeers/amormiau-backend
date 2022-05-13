@@ -5,6 +5,7 @@ const bodyParser = require('body-parser');
 const jwt = require('jsonwebtoken');
 const path = require('path')
 const User = require('./models/userModel')
+const Cat = require('./models/catModel')
 const routes = require('./routes/route.js');
 const adminRouter = require('./routes/admin.js');
 require('../config/database.js');
@@ -35,6 +36,7 @@ app.use(
   "/files",
   express.static(path.resolve(__dirname, "..", "tmp", "uploads"))
 );
+
 
 app.use(async (req, res, next) => {
   if (req.headers["x-access-token"]) {

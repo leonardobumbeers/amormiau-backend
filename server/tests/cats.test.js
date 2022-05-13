@@ -8,7 +8,8 @@ const { grantAccess, clearDatabase } = require('../util/grantAccess');
 require("dotenv/config");
 
 beforeAll(async () => {
-    const URL = 'http://localhost:3000'
+    // const URL = 'http://localhost:3000'
+    const URL = 'https://amormiau-backend.herokuapp.com'
     global.url = URL
     await grantAccess.then((result) => {
         global.accessToken = result.accessToken;
@@ -23,6 +24,7 @@ afterAll(async () => {
 
 
 describe('Testing cats CRUD', () => {
+    jest.setTimeout(30000);
 
     test('should register a new cat', async () => {
 
@@ -41,6 +43,9 @@ describe('Testing cats CRUD', () => {
             .field('specialCat', cat.randomSpecialCat)
             .field('description', cat.randomDescription)
             .field('available', cat.randomAvailable)
+            .field('sociable', cat.randomSociable)
+            .field('playful', cat.randomPlayful)
+            .field('affectionate', cat.randomAffectionate)
             .attach('images', filePath, { filename: 'img.example.jpg', type: 'jpg' })
 
 
@@ -86,7 +91,10 @@ describe('Testing cats CRUD', () => {
                 sterilized: cat.randomSterilized,
                 specialCat: cat.randomSpecialCat,
                 description: cat.randomDescription,
-                available: cat.randomAvailable
+                available: cat.randomAvailable,
+                sociable: cat.randomSociable,
+                playful: cat.randomPlayful,
+                affectionate: cat.randomAffectionate
             })
         })
         const responseBody = await response.json()

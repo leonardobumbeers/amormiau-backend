@@ -4,7 +4,8 @@ const { grantAccess, clearDatabase } = require('../util/grantAccess');
 require("dotenv/config");
 
 beforeAll(async () => {
-    const URL = 'http://localhost:3000'
+    // const URL = 'http://localhost:3000'
+    const URL = 'https://amormiau-backend.herokuapp.com'
     global.url = URL
     await grantAccess.then((result) => {
         global.accessToken = result.accessToken;

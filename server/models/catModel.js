@@ -1,5 +1,8 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
+const fs = require('fs');
+const path = require('path');
+const { promisify } = require('util');
 
 const CatSchema = new Schema({
   name: {
@@ -34,6 +37,21 @@ const CatSchema = new Schema({
     required: true
   },
 
+  sociable: {
+    type: Number,
+    default: 0,
+  },
+
+  playful: {
+    type: Number,
+    default: 0,
+  },
+
+  affectionate: {
+    type: Number,
+    default: 0,
+  },
+
   images: [
     {
       fileName: String,
@@ -45,6 +63,12 @@ const CatSchema = new Schema({
 }, {
   timestamps: true
 });
+
+CatSchema.pre('remove', function () {
+  promisify(fs.unlink)(path.resolve(__dirname, '..', '..', 'tmp', 'uploads', this.images[0].key));
+});
+
+
 
 const Cat = mongoose.model('cat', CatSchema)
 

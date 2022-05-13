@@ -32,7 +32,18 @@ exports.allowIfLoggedin = async (req, res, next) => {
 exports.registerCat = async (req, res, next) => {
   try {
 
-    const { name, birthDate, weight, sterilized, specialCat, description, available } = req.body
+    const {
+      name,
+      birthDate,
+      weight,
+      sterilized,
+      specialCat,
+      description,
+      available,
+      sociable,
+      playful,
+      affectionate
+    } = req.body
     const images = {} = req.files;
 
     // console.log(JSON.stringify(images, null, 2));
@@ -47,6 +58,9 @@ exports.registerCat = async (req, res, next) => {
       specialCat: specialCat,
       available: available || true,
       description: description,
+      sociable: sociable || 0,
+      playful: playful || 0,
+      affectionate: affectionate || 0,
       images: []
 
     });
@@ -103,6 +117,9 @@ exports.updateCat = async (req, res, next) => {
     const updatedSpecialCat = req.body.specialCat;
     const updatedDescription = req.body.description;
     const updatedAvailable = req.body.available;
+    const updatedSociable = req.body.sociable;
+    const updatedPlayful = req.body.playful;
+    const updatedAffectionate = req.body.affectionate;
 
     const catId = req.params.catId;
     const cat = await Cat.findById(catId)
@@ -117,6 +134,9 @@ exports.updateCat = async (req, res, next) => {
         cat.specialCat = updatedSpecialCat;
         cat.description = updatedDescription;
         cat.available = updatedAvailable;
+        cat.sociable = updatedSociable;
+        cat.playful = updatedPlayful;
+        cat.affectionate = updatedAffectionate;
         return cat.save()
       })
 
@@ -171,9 +191,9 @@ exports.deleteCat = async (req, res, next) => {
     const catId = req.params.catId;
     const cat = await Cat.findById(catId);
     if (!cat) throw new Error("Cat not found");
-    await Cat.findByIdAndRemove(catId);
+    await cat.remove();
     res.status(200).json({
-      data: null,
+      // data: null,
       message: "Cat is deleted successfully"
     });
   } catch (e) {

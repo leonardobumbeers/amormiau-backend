@@ -21,7 +21,7 @@
       "name": "x-access-token"
     }
   },
-  "schemes": ["http"],
+  "schemes": ["https"],
   "consumes": ["application/json"],
   "produces": ["application/json"],
   "paths": {
@@ -82,6 +82,27 @@
             "description": "Cat's description",
             "required": false,
             "type": "string"
+          },
+          {
+            "name": "sociable",
+            "in": "formData",
+            "description": "Cat's sociable level",
+            "required": false,
+            "type": "number"
+          },
+          {
+            "name": "playful",
+            "in": "formData",
+            "description": "Cat's playful level",
+            "required": false,
+            "type": "number"
+          },
+          {
+            "name": "affectionate",
+            "in": "formData",
+            "description": "Cat's affectionate level",
+            "required": false,
+            "type": "number"
           },
           {
             "name": "images",
@@ -420,6 +441,16 @@
         "description": {
           "type": "string"
         },
+        "sociable": {
+          "type": "number"
+        },
+        "playful": {
+          "type": "number"
+        },
+        "affectionate": {
+          "type": "number"
+        },
+
         "images": {
           "type": "array",
           "items": {
@@ -573,6 +604,15 @@
         },
         "available": {
           "type": "boolean"
+        },
+        "sociable": {
+          "type": "number"
+        },
+        "playful": {
+          "type": "number"
+        },
+        "affectionate": {
+          "type": "number"
         }
       },
       "required": ["name", "birthDate", "available"]

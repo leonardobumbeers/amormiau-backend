@@ -1,7 +1,7 @@
 const options = {
-    // customCss: '.swagger-ui .topbar { display: none }'
-    customSiteTitle: "AmorMiau Swagger",
-    customCss: ` .swagger-ui .topbar {
+  // customCss: '.swagger-ui .topbar { display: none }'
+  customSiteTitle: "AmorMiau Swagger",
+  customCss: ` .swagger-ui .topbar {
       background: #00b4db;
       background: -webkit-linear-gradient(to right, #0083b0, #00b4db);
       background: linear-gradient(to right, #0083b0, #00b4db);
@@ -18,7 +18,7 @@ const options = {
       transition: all 0.4s ease-in-out 0s !important;
     }
     `,
-    customfavIcon: `https://img.icons8.com/external-justicon-flat-justicon/32/external-cat-dog-and-cat-justicon-flat-justicon-4.png`
+  customfavIcon: `https://img.icons8.com/external-justicon-flat-justicon/32/external-cat-dog-and-cat-justicon-flat-justicon-4.png`
 };
 
 module.exports = options;
