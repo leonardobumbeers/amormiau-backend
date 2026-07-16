@@ -24,7 +24,7 @@
     "jsonwebtoken": "^9.0.0",
     "mongoose": "^6.13.6",
     "morgan": "^1.10.0",
-    "multer": "^1.4.4",
+    "multer": "^2.2.0",
     "nodemon": "^2.0.20",
     "swagger-jsdoc": "^6.1.0",
     "swagger-ui-express": "^4.3.0"
