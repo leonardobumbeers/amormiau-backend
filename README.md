@@ -1,5 +1,19 @@
 # amor-miau-backend
 
+<p align="center">
+  <a href="https://github.com/leonardobumbeers/amormiau-backend/actions/workflows/node.js.yml"><img alt="Backend CI" src="https://github.com/leonardobumbeers/amormiau-backend/actions/workflows/node.js.yml/badge.svg?branch=master"></a>
+  <a href="https://github.com/leonardobumbeers/amormiau-backend/actions/workflows/codeql-analysis.yml"><img alt="CodeQL" src="https://github.com/leonardobumbeers/amormiau-backend/actions/workflows/codeql-analysis.yml/badge.svg?branch=master"></a>
+  <a href="https://github.com/leonardobumbeers/amormiau-backend/actions/workflows/production-smoke.yml"><img alt="Production Smoke Tests" src="https://github.com/leonardobumbeers/amormiau-backend/actions/workflows/production-smoke.yml/badge.svg?branch=master"></a>
+  <a href="https://github.com/leonardobumbeers/amormiau-backend/blob/master/LICENSE.txt"><img alt="License" src="https://img.shields.io/github/license/leonardobumbeers/amormiau-backend"></a>
+  <a href="https://nodejs.org/"><img alt="Node.js 24" src="https://img.shields.io/badge/Node.js-24-339933?logo=nodedotjs&logoColor=white"></a>
+  <a href="https://expressjs.com/"><img alt="Express 4" src="https://img.shields.io/badge/Express-4-000000?logo=express&logoColor=white"></a>
+  <a href="https://www.mongodb.com/"><img alt="MongoDB" src="https://img.shields.io/badge/MongoDB-Mongoose-47A248?logo=mongodb&logoColor=white"></a>
+  <a href="https://jestjs.io/"><img alt="Tested with Jest" src="https://img.shields.io/badge/tested%20with-Jest-C21325?logo=jest&logoColor=white"></a>
+  <a href="https://github.com/leonardobumbeers/amormiau-backend/blob/master/package.json"><img alt="Coverage threshold" src="https://img.shields.io/badge/function%20coverage%20threshold-90%25-brightgreen"></a>
+  <a href="https://www.docker.com/"><img alt="Docker" src="https://img.shields.io/badge/container-Docker-2496ED?logo=docker&logoColor=white"></a>
+  <a href="https://github.com/leonardobumbeers/amormiau-backend/pulls"><img alt="Pull requests welcome" src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg"></a>
+</p>
+
 <div id="top"></div>
 
 
@@ -156,6 +170,37 @@ Use this space to show useful examples of how a project can be used. Additional 
 _For more examples, please refer to the [Documentation](https://example.com)_
 
 <p align="right">(<a href="#top">back to top</a>)</p>
+
+## Testing and continuous integration
+
+The Jest suite separates fast unit tests from HTTP-level API integration tests. The integration tests use Supertest to exercise the Express routes, middleware, controllers, authentication, role-based authorization, error responses, and user/cat workflows without requiring a shared test database.
+
+```sh
+npm run test:unit
+npm run test:integration
+npm run test:coverage
+```
+
+Every push and pull request to `master` runs all three quality gates in GitHub Actions. Coverage fails below the thresholds configured in `package.json`, and a production Docker image is built only after the test job succeeds.
+
+After GitHub receives a successful production deployment event, a separate smoke workflow checks the deployed API, database health, Swagger documentation, static assets, protected routes, and 404 handling. It can also be run manually from the Actions tab with any deployed URL.
+
+```sh
+PRODUCTION_URL=https://your-api.example.com npm run test:smoke:production
+```
+
+Privacy engineering controls and the remaining operational/legal checklist are documented in [`docs/LGPD-READINESS.md`](docs/LGPD-READINESS.md). This checklist supports risk reduction but is not a legal compliance certification.
+
+## Adoption workflow
+
+Adoption is an auditable request-and-review process:
+
+1. A logged-in user submits `POST /adoptions` with a `catId`.
+2. The user follows their requests with `GET /adoptions/me`.
+3. A supervisor or admin reviews `GET /admin/adoptions?status=pending`.
+4. The reviewer sends `PATCH /admin/adoptions/:requestId/decision` with `approved` or `rejected` and an optional reason.
+
+Approval uses a MongoDB transaction to update the request, cat availability, adopter's cat relationship, reviewer audit fields, and competing requests as one unit. MongoDB must therefore run as a replica set; the included Compose configuration initializes a single-node `rs0` replica set for local development. The legacy direct-adoption endpoint returns `410 Gone` so it cannot bypass review.
 
 
 

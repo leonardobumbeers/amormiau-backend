@@ -6,7 +6,7 @@ services:
     environment:
       NODE_ENV: production
       PORT: 3000
-      MONGODB_URL: mongodb://mongodb:27017/amormiau
+      MONGODB_URL: mongodb://mongodb:27017/amormiau?replicaSet=rs0
       JWT_SECRET: ${JWT_SECRET:-local-development-secret}
     ports:
       - "3000:3000"
@@ -24,11 +24,12 @@ services:
 
   mongodb:
     image: mongo:7
+    command: ["mongod", "--replSet", "rs0", "--bind_ip_all"]
     restart: unless-stopped
     volumes:
       - mongodb_data:/data/db
     healthcheck:
-      test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping').ok"]
+      test: ["CMD-SHELL", "mongosh --quiet --eval \"try { rs.status().ok } catch (error) { rs.initiate({_id:'rs0',members:[{_id:0,host:'mongodb:27017'}]}).ok }\" | grep 1"]
       interval: 10s
       timeout: 5s
       retries: 5

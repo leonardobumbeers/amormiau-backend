@@ -365,35 +365,84 @@
         ]
       }
     },
-    "/admin/adoptCat/{catId}": {
-      "put": {
-        "summary": "User adopt and associate with a cat",
-        "tags": ["Adopt"],
-        "operationId": "Useradoptandassociatewithacat",
-        "deprecated": false,
+    "/adoptions": {
+      "post": {
+        "summary": "Submit an adoption request for the authenticated user",
+        "tags": ["Adoption"],
         "produces": ["application/json"],
         "parameters": [
           {
-            "name": "Body",
+            "name": "body",
             "in": "body",
             "required": true,
-            "description": "",
             "schema": {
-              "$ref": "#/definitions/UseradoptandassociatewithacatRequest"
+              "type": "object",
+              "required": ["catId"],
+              "properties": {
+                "catId": { "type": "string" }
+              }
             }
           }
         ],
         "responses": {
-          "200": {
-            "description": "",
-            "headers": {}
-          }
+          "201": { "description": "Adoption request created" },
+          "409": { "description": "Cat unavailable or request already pending" }
         },
-        "security": [
+        "security": [{ "ApiKeyAuth": [] }]
+      }
+    },
+    "/adoptions/me": {
+      "get": {
+        "summary": "List the authenticated user's adoption requests",
+        "tags": ["Adoption"],
+        "responses": { "200": { "description": "Adoption request history" } },
+        "security": [{ "ApiKeyAuth": [] }]
+      }
+    },
+    "/admin/adoptions": {
+      "get": {
+        "summary": "List adoption requests for supervisor or admin review",
+        "tags": ["Adoption"],
+        "parameters": [
           {
-            "ApiKeyAuth": []
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "enum": ["pending", "approved", "rejected"]
           }
-        ]
+        ],
+        "responses": { "200": { "description": "Adoption review queue" } },
+        "security": [{ "ApiKeyAuth": [] }]
+      }
+    },
+    "/admin/adoptions/{requestId}/decision": {
+      "patch": {
+        "summary": "Approve or reject a pending adoption request",
+        "tags": ["Adoption"],
+        "parameters": [
+          { "name": "requestId", "in": "path", "required": true, "type": "string" },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "required": ["decision"],
+              "properties": {
+                "decision": { "type": "string", "enum": ["approved", "rejected"] },
+                "reason": { "type": "string", "maxLength": 500 }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": { "description": "Decision committed transactionally" },
+          "404": { "description": "Pending request not found" },
+          "409": { "description": "Cat no longer available" },
+          "422": { "description": "Invalid decision" }
+        },
+        "security": [{ "ApiKeyAuth": [] }]
       }
     }
   },

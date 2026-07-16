@@ -5,6 +5,7 @@ const userController = require('../controllers/userController');
 const multer = require("multer");
 const multerConfig = require("../util/multer");
 const { roles } = require('../roles');
+const { sanitizeUser } = require('../util/privacy');
 
 exports.grantAccess = function (action, resource) {
   return async (req, res, next) => {
@@ -44,7 +45,7 @@ exports.registerCat = async (req, res, next) => {
       playful,
       affectionate
     } = req.body
-    const images = {} = req.files;
+    const images = req.files || [];
 
     // console.log(JSON.stringify(images, null, 2));
     // if(images.length === 0) throw new Error('No images were uploaded')
@@ -162,7 +163,7 @@ exports.adoptCat = async (req, res, next) => {
     const user = await User.findById(userId)
     if (!user) throw new Error('User not found')
 
-    const cat = await User.findById(catId)
+    const cat = await Cat.findById(catId)
     if (!cat) throw new Error("Cat not found");
 
     var catNew = await Cat.findById(catId)
@@ -172,12 +173,12 @@ exports.adoptCat = async (req, res, next) => {
       })
     var userNew = await User.findById(userId)
       .then(user => {
-        user.cats = catId;
+        user.cats = [catId];
         return user.save()
       })
 
     res.status(200).json({
-      data: catNew, userNew,
+      data: catNew, userNew: sanitizeUser(userNew),
       message: "Cat and User updated successfully"
     });
 
@@ -185,6 +186,10 @@ exports.adoptCat = async (req, res, next) => {
     next(e)
   }
 }
+
+exports.deprecatedAdoptCat = (req, res) => res.status(410).json({
+  error: 'Direct adoption is disabled; submit and review an adoption request'
+});
 
 exports.deleteCat = async (req, res, next) => {
   try {

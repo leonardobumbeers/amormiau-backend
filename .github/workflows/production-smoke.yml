@@ -1,0 +1,46 @@
+name: Production Smoke Tests
+
+on:
+  deployment_status:
+  workflow_dispatch:
+    inputs:
+      url:
+        description: Deployed API URL to test
+        required: true
+        type: string
+
+concurrency:
+  group: production-smoke-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  smoke:
+    name: Verify deployed API
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.deployment_status.state == 'success' &&
+      github.event.deployment.environment == 'Production')
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    permissions:
+      contents: read
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Use Node.js 24 LTS
+        uses: actions/setup-node@v5
+        with:
+          node-version: 24.x
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run production smoke tests
+        env:
+          # The immutable Vercel deployment URL is protected. Test the public
+          # production alias after Vercel reports a successful deployment.
+          PRODUCTION_URL: ${{ inputs.url || 'https://amormiau-backend.vercel.app' }}
+        run: npm run test:smoke:production
