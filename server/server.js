@@ -101,9 +101,11 @@ app.use(function (error, req, res, next) {
 
 
 
-app.listen(PORT, () => {
-  console.log('Server is listening on Port:', PORT)
-})
+if (require.main === module) {
+  app.listen(PORT, () => {
+    console.log('Server is listening on Port:', PORT)
+  });
+}
 
 
 module.exports = app;

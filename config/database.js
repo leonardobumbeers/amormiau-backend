@@ -1,15 +1,10 @@
 const mongoose = require('mongoose');
-const path = require('path')
 mongoose.Promise = global.Promise;
+mongoose.set('strictQuery', true);
 require("dotenv/config");
 
 
-mongoose.connect(process.env.MONGODB_URL,
-    {
-        useNewUrlParser: true,
-        useUnifiedTopology: true,
-        useCreateIndex: true
-    })
+mongoose.connect(process.env.MONGODB_URL)
 // .then(() => console.log('Conectou no MongoDB com sucesso!'))
 // .catch((err) => console.log(err));
 
