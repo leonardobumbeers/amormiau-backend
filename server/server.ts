@@ -1,30 +1,29 @@
 const express = require('express');
+import type { NextFunction, Request, Response } from 'express';
 const rateLimit = require('express-rate-limit');
-var logger = require('morgan');
-const bodyParser = require('body-parser');
+const logger = require('morgan');
 const jwt = require('jsonwebtoken');
 const path = require('path')
 const User = require('./models/userModel')
-const Cat = require('./models/catModel')
-const routes = require('./routes/route.js');
-const adminRouter = require('./routes/admin.js');
-const adoptionRouter = require('./routes/adoptions.js');
+const routes = require('./routes/route');
+const adminRouter = require('./routes/admin');
+const adoptionRouter = require('./routes/adoptions');
 const errorHandler = require('./middleware/errorHandler');
-const { connectDatabase } = require('../config/database.js');
+const { connectDatabase } = require('../config/database');
 require("dotenv").config({
   path: path.join(__dirname, "../.env")
 });
 const swaggerUi = require('swagger-ui-express');
 const swaggerDocument = require('../tmp/swagger/swagger.json');
 const options = require('../tmp/swagger/custom');
-var cors = require('cors');
+const cors = require('cors');
 
 
 
 
 const app = express();
 app.disable('x-powered-by');
-app.use((req, res, next) => {
+app.use((_req: Request, res: Response, next: NextFunction) => {
   res.set({
     'X-Content-Type-Options': 'nosniff',
     'X-Frame-Options': 'DENY',
@@ -50,7 +49,7 @@ app.use(
 );
 
 
-app.use(async (req, res, next) => {
+app.use(async (req: Request, res: Response, next: NextFunction) => {
   if (req.headers["x-access-token"]) {
     try {
       await connectDatabase();
@@ -71,20 +70,20 @@ app.use(async (req, res, next) => {
     next();
   }
 });
-app.get('/docs/swagger-ui.css', (req, res) => {
+app.get('/docs/swagger-ui.css', (_req: Request, res: Response) => {
   res.type('text/css').sendFile(require.resolve('swagger-ui-dist/swagger-ui.css'));
 });
 app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument, options));
-app.get('/health', async (req, res) => {
+app.get('/health', async (_req: Request, res: Response) => {
   try {
     await connectDatabase();
     res.status(200).json({ status: 'ok', database: 'connected' });
-  } catch (error) {
-    console.error('MongoDB health check failed:', error.message);
+  } catch (error: unknown) {
+    console.error('MongoDB health check failed:', error instanceof Error ? error.message : 'Unknown error');
     res.status(503).json({ status: 'unavailable', database: 'disconnected' });
   }
 });
-app.get('/', (req, res) => {
+app.get('/', (_req: Request, res: Response) => {
   const databaseConnected = require('mongoose').connection.readyState === 1;
 
   res.status(200).json({
@@ -95,12 +94,12 @@ app.get('/', (req, res) => {
   });
 });
 
-app.use(async (req, res, next) => {
+app.use(async (_req: Request, res: Response, next: NextFunction) => {
   try {
     await connectDatabase();
     next();
-  } catch (error) {
-    console.error('MongoDB request connection failed:', error.message);
+  } catch (error: unknown) {
+    console.error('MongoDB request connection failed:', error instanceof Error ? error.message : 'Unknown error');
     res.status(503).json({ error: 'Database unavailable' });
   }
 });

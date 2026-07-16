@@ -1,4 +1,45 @@
-const mockState = { users: [], cats: [], adoptions: [], nextId: 1 };
+type Role = 'basic' | 'supervisor' | 'admin';
+type AdoptionStatus = 'pending' | 'approved' | 'rejected';
+
+interface MockUser {
+  _id: string;
+  name?: string;
+  email?: string;
+  password?: string;
+  accessToken?: string;
+  role: Role;
+  cats: string[];
+  save: jest.Mock<Promise<MockUser>, []>;
+}
+
+interface MockCat {
+  _id: string;
+  name?: string;
+  birthDate?: string;
+  available: boolean;
+  save: jest.Mock<Promise<MockCat>, []>;
+}
+
+interface MockAdoption {
+  _id: string;
+  user: string;
+  cat: string;
+  status: AdoptionStatus;
+  createdAt: Date;
+  decidedBy?: string;
+  decidedAt?: Date;
+  decisionReason?: string;
+  save: jest.Mock<Promise<MockAdoption>, []>;
+}
+
+interface MockState {
+  users: MockUser[];
+  cats: MockCat[];
+  adoptions: MockAdoption[];
+  nextId: number;
+}
+
+const mockState: MockState = { users: [], cats: [], adoptions: [], nextId: 1 };
 const mockId = () => (mockState.nextId++).toString(16).padStart(24, '0');
 const mockQuery = value => {
   const query = {
@@ -10,9 +51,12 @@ const mockQuery = value => {
 };
 
 jest.mock('mongoose', () => {
-  const mongoose = jest.requireActual('mongoose');
   return {
-    ...mongoose,
+    Types: {
+      ObjectId: {
+        isValid: (value: string) => /^[a-f\d]{24}$/i.test(value)
+      }
+    },
     startSession: jest.fn(async () => ({
     withTransaction: async callback => callback(),
     endSession: jest.fn(async () => {})
@@ -28,8 +72,8 @@ jest.mock('multer', () => () => ({ array: () => (req, res, next) => next() }));
 jest.mock('../util/multer', () => ({}));
 
 jest.mock('../models/userModel', () => {
-  function User(data) {
-    Object.assign(this, data, { _id: mockId('user') });
+  function User(this: MockUser, data: Partial<MockUser>) {
+    Object.assign(this, data, { _id: mockId() });
     this.save = jest.fn(async () => {
       if (!mockState.users.includes(this)) mockState.users.push(this);
       return this;
@@ -51,8 +95,8 @@ jest.mock('../models/userModel', () => {
 });
 
 jest.mock('../models/catModel', () => {
-  function Cat(data) {
-    Object.assign(this, data, { _id: mockId('cat') });
+  function Cat(this: MockCat, data: Partial<MockCat>) {
+    Object.assign(this, data, { _id: mockId() });
     this.save = jest.fn(async () => {
       if (!mockState.cats.includes(this)) mockState.cats.push(this);
       return this;
@@ -65,35 +109,43 @@ jest.mock('../models/catModel', () => {
 });
 
 jest.mock('../models/adoptionModel', () => {
-  const Adoption = {};
-  Adoption.create = jest.fn(async data => {
-    const adoption = {
+  const Adoption = {
+    create: jest.fn(async (data: Pick<MockAdoption, 'user' | 'cat'>) => {
+    const adoption: MockAdoption = {
       ...data,
-      _id: mockId('adoption'),
+      _id: mockId(),
       status: 'pending',
       createdAt: new Date(),
-      save: jest.fn(async function save() { return this; })
+      save: jest.fn<Promise<MockAdoption>, []>()
     };
+    adoption.save.mockImplementation(async () => adoption);
     mockState.adoptions.push(adoption);
     return adoption;
-  });
-  Adoption.findOne = jest.fn(query => mockQuery(
+    }),
+    findOne: jest.fn((query: Record<string, unknown>) => mockQuery(
     mockState.adoptions.find(adoption =>
-      Object.entries(query).every(([key, value]) => String(adoption[key]) === String(value))
+      Object.entries(query).every(([key, value]) =>
+        String((adoption as unknown as Record<string, unknown>)[key]) === String(value)
+      )
     ) || null
-  ));
-  Adoption.find = jest.fn(query => mockQuery(
+    )),
+    find: jest.fn((query: Record<string, unknown>) => mockQuery(
     mockState.adoptions.filter(adoption =>
-      Object.entries(query).every(([key, value]) => String(adoption[key]) === String(value))
+      Object.entries(query).every(([key, value]) =>
+        String((adoption as unknown as Record<string, unknown>)[key]) === String(value)
+      )
     )
-  ));
-  Adoption.updateMany = jest.fn(async (query, update) => {
+    )),
+    updateMany: jest.fn(async (query: {
+      _id: { $ne: string }; cat: string; status: AdoptionStatus;
+    }, update: { $set: Partial<MockAdoption> }) => {
     const candidates = mockState.adoptions.filter(adoption =>
       adoption._id !== query._id.$ne && adoption.cat === query.cat && adoption.status === query.status
     );
     candidates.forEach(adoption => Object.assign(adoption, update.$set));
     return { modifiedCount: candidates.length };
-  });
+    })
+  };
   return Adoption;
 });
 
@@ -124,12 +176,12 @@ describe('complete adoption HTTP journey', () => {
     mockState.nextId = 1;
     jest.clearAllMocks();
 
-    const admin = {
+    const admin: MockUser = {
       _id: 'admin-1', name: 'Admin', email: 'admin@amormiau.org',
       role: 'admin', cats: [], password: 'hash', accessToken: 'secret',
       save: jest.fn(async function save() { return this; })
     };
-    const supervisor = {
+    const supervisor: MockUser = {
       _id: 'supervisor-1', name: 'Supervisor', role: 'supervisor', cats: [],
       save: jest.fn(async function save() { return this; })
     };
@@ -241,11 +293,11 @@ describe('complete adoption HTTP journey', () => {
   });
 
   it('preserves user and cat data when a supervisor rejects the request', async () => {
-    const applicant = {
+    const applicant: MockUser = {
       _id: 'applicant-1', role: 'basic', cats: [],
       save: jest.fn(async function save() { return this; })
     };
-    const cat = {
+    const cat: MockCat = {
       _id: '000000000000000000000101', name: 'Sol', available: true,
       save: jest.fn(async function save() { return this; })
     };
@@ -283,7 +335,7 @@ describe('complete adoption HTTP journey', () => {
   });
 
   it('rejects a malformed cat identifier before querying persistence', async () => {
-    const applicant = {
+    const applicant: MockUser = {
       _id: 'applicant-1', role: 'basic', cats: [],
       save: jest.fn(async function save() { return this; })
     };

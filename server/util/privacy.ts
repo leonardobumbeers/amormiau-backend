@@ -1,12 +1,15 @@
 const PRIVATE_CREDENTIAL_FIELDS = new Set(['password', 'accessToken']);
 
-function plainObject(value) {
+type UserRecord = Record<string, unknown>;
+type ObjectDocument = { toObject(): UserRecord };
+
+function plainObject(value: UserRecord | ObjectDocument | null): UserRecord | null {
   if (!value) return value;
   if (typeof value.toObject === 'function') return value.toObject();
   return { ...value };
 }
 
-function sanitizeUser(user) {
+function sanitizeUser(user: UserRecord | ObjectDocument | null): UserRecord | null {
   const safeUser = plainObject(user);
   if (!safeUser) return safeUser;
 
@@ -14,7 +17,7 @@ function sanitizeUser(user) {
   return safeUser;
 }
 
-function sanitizeUsers(users) {
+function sanitizeUsers(users: Array<UserRecord | ObjectDocument>): Array<UserRecord | null> {
   return users.map(sanitizeUser);
 }
 

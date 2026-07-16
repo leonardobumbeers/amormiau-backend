@@ -1,4 +1,4 @@
-var User = require('../models/userModel');
+const User = require('../models/userModel');
 require("dotenv/config");
 const jwt = require('jsonwebtoken');
 const mongoose = require('mongoose');
@@ -9,7 +9,7 @@ const grantAccess = new Promise((resolve, reject) => {
     mongoose.connect(process.env.MONGODB_URL)
 
     // get reference to database
-    var db = mongoose.connection;
+    const db = mongoose.connection;
 
     db.on('error', console.error.bind(console, 'connection error:'));
 
@@ -47,7 +47,7 @@ const clearDatabase = async () => {
     mongoose.connect(process.env.MONGODB_URL)
 
     // get reference to database
-    var db = mongoose.connection;
+    const db = mongoose.connection;
 
     db.on('error', console.error.bind(console, 'connection error:'));
 

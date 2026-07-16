@@ -1,4 +1,6 @@
-const statusByMessage = {
+import type { ErrorRequestHandler } from 'express';
+
+const statusByMessage: Record<string, number> = {
   'Cat already exists': 409,
   'Cat not found': 404,
   'Cat already adopted': 409,
@@ -15,9 +17,11 @@ const statusByMessage = {
   'Pending adoption request not found': 404
 };
 
-module.exports = function errorHandler(error, req, res, next) {
+const errorHandler: ErrorRequestHandler = (error: Error, _req, res, _next) => {
   const status = statusByMessage[error.message] || 500;
   const message = status === 500 ? 'Internal server error' : error.message;
 
   res.status(status).json({ error: message });
 };
+
+module.exports = errorHandler;

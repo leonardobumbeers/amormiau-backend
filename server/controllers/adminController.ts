@@ -1,14 +1,19 @@
 const User = require('../models/userModel');
+import type { NextFunction, Request, Response } from 'express';
+
+interface MutableCat {
+  name?: unknown; birthDate?: unknown; weight?: unknown; sterilized?: unknown;
+  specialCat?: unknown; description?: unknown; available?: unknown;
+  sociable?: unknown; playful?: unknown; affectionate?: unknown;
+  save(): Promise<unknown>;
+}
+interface MutableUser { cats: unknown[]; save(): Promise<unknown> }
 const Cat = require('../models/catModel');
-const jwt = require('jsonwebtoken');
-const userController = require('../controllers/userController');
-const multer = require("multer");
-const multerConfig = require("../util/multer");
 const { roles } = require('../roles');
 const { sanitizeUser } = require('../util/privacy');
 
-exports.grantAccess = function (action, resource) {
-  return async (req, res, next) => {
+exports.grantAccess = function (action: string, resource: string) {
+  return async (req: Request, res: Response, next: NextFunction) => {
     try {
       const permission = roles.can(req.user.role)[action](resource);
       if (!permission.granted) throw new Error("You don't have enough permission to perform this action");
@@ -19,7 +24,7 @@ exports.grantAccess = function (action, resource) {
   }
 }
 
-exports.allowIfLoggedin = async (req, res, next) => {
+exports.allowIfLoggedin = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const user = res.locals.loggedInUser;
     if (!user) throw new Error("You need to be logged in to access this route");
@@ -30,7 +35,7 @@ exports.allowIfLoggedin = async (req, res, next) => {
   }
 }
 
-exports.registerCat = async (req, res, next) => {
+exports.registerCat = async (req: Request, res: Response, next: NextFunction) => {
   try {
 
     const {
@@ -45,7 +50,7 @@ exports.registerCat = async (req, res, next) => {
       playful,
       affectionate
     } = req.body
-    const images = req.files || [];
+    const images = Array.isArray(req.files) ? req.files : [];
 
     // console.log(JSON.stringify(images, null, 2));
     // if(images.length === 0) throw new Error('No images were uploaded')
@@ -66,10 +71,11 @@ exports.registerCat = async (req, res, next) => {
 
     });
 
-    for (let image of images) {
+    for (const image of images) {
+      const uploadedImage = image as Express.Multer.File & { key: string };
       newCat.images.push({
         fileName: image.originalname,
-        key: image.key,
+        key: uploadedImage.key,
         size: image.size,
         dest: image.destination
       })
@@ -85,7 +91,7 @@ exports.registerCat = async (req, res, next) => {
   }
 }
 
-exports.getCats = async (req, res, next) => {
+exports.getCats = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const cats = await Cat.find();
     res.status(200).json({ data: cats })
@@ -95,7 +101,7 @@ exports.getCats = async (req, res, next) => {
 }
 
 
-exports.getCat = async (req, res, next) => {
+exports.getCat = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const catId = req.params.catId;
     const cat = await Cat.findById(catId)
@@ -109,7 +115,7 @@ exports.getCat = async (req, res, next) => {
 }
 
 
-exports.updateCat = async (req, res, next) => {
+exports.updateCat = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const updatedName = req.body.name;
     const updatedBirthDate = req.body.birthDate;
@@ -126,8 +132,8 @@ exports.updateCat = async (req, res, next) => {
     const cat = await Cat.findById(catId)
     if (!cat) throw new Error("Cat not found");
 
-    var catNew = await Cat.findById(catId)
-      .then(cat => {
+    const catNew = await Cat.findById(catId)
+      .then((cat: MutableCat) => {
         cat.name = updatedName;
         cat.birthDate = updatedBirthDate;
         cat.weight = updatedWeight;
@@ -152,7 +158,7 @@ exports.updateCat = async (req, res, next) => {
   }
 }
 
-exports.adoptCat = async (req, res, next) => {
+exports.adoptCat = async (req: Request, res: Response, next: NextFunction) => {
   try {
 
     const catId = req.params.catId;
@@ -166,13 +172,13 @@ exports.adoptCat = async (req, res, next) => {
     const cat = await Cat.findById(catId)
     if (!cat) throw new Error("Cat not found");
 
-    var catNew = await Cat.findById(catId)
-      .then(cat => {
+    const catNew = await Cat.findById(catId)
+      .then((cat: MutableCat) => {
         cat.available = false;
         return cat.save()
       })
-    var userNew = await User.findById(userId)
-      .then(user => {
+    const userNew = await User.findById(userId)
+      .then((user: MutableUser) => {
         user.cats = [catId];
         return user.save()
       })
@@ -187,11 +193,11 @@ exports.adoptCat = async (req, res, next) => {
   }
 }
 
-exports.deprecatedAdoptCat = (req, res) => res.status(410).json({
+exports.deprecatedAdoptCat = (_req: Request, res: Response) => res.status(410).json({
   error: 'Direct adoption is disabled; submit and review an adoption request'
 });
 
-exports.deleteCat = async (req, res, next) => {
+exports.deleteCat = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const catId = req.params.catId;
     const cat = await Cat.findById(catId);

@@ -2,19 +2,24 @@
   "name": "sochase-rbac",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "dist/index.js",
   "engines": {
     "node": ">=24 <25",
     "npm": ">=11"
   },
   "scripts": {
-    "dev": "npx nodemon start",
-    "start": "node server/server.js",
+    "dev": "tsx watch server/server.ts",
+    "build": "rm -rf dist && tsc && cp tmp/swagger/swagger.json dist/tmp/swagger/swagger.json && cp -R tmp/uploads dist/tmp/uploads",
+    "start": "node dist/server/server.js",
+    "typecheck": "tsc --noEmit",
+    "typecheck:test": "tsc --project tsconfig.test.json --noEmit",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
     "test": "jest",
     "test:unit": "jest --runInBand --testPathPatterns=unit",
     "test:integration": "jest --runInBand --testPathPatterns='integration|app|vercel|e2e'",
     "test:coverage": "jest --runInBand --coverage",
-    "test:smoke:production": "jest --runInBand --config jest.production.config.js",
+    "test:smoke:production": "jest --runInBand --config jest.production.config.json",
     "test:watch": "jest --watchAll"
   },
   "author": "",
@@ -38,20 +43,38 @@
     "swagger-ui-express": "^4.3.0"
   },
   "devDependencies": {
+    "@eslint/js": "^10.0.1",
     "@faker-js/faker": "^6.0.0-alpha.7",
+    "@swc/core": "^1.15.43",
+    "@swc/jest": "^0.2.39",
+    "@types/bcrypt": "^6.0.0",
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.6",
+    "@types/jest": "^30.0.0",
+    "@types/jsonwebtoken": "^9.0.10",
+    "@types/morgan": "^1.9.10",
+    "@types/multer": "^2.2.0",
+    "@types/node": "^26.1.1",
+    "@types/supertest": "^7.2.1",
+    "@types/swagger-ui-express": "^4.1.8",
+    "eslint": "^10.7.0",
     "formdata-node": "^4.3.2",
+    "globals": "^17.7.0",
     "jest": "^30.4.2",
     "mz": "^2.7.0",
-    "supertest": "^6.2.2"
+    "supertest": "^6.2.2",
+    "tsx": "^4.23.1",
+    "typescript": "^6.0.3",
+    "typescript-eslint": "^8.64.0"
   },
   "jest": {
     "collectCoverageFrom": [
-      "api/**/*.js",
-      "config/**/*.js",
-      "server/**/*.js",
+      "api/**/*.ts",
+      "config/**/*.ts",
+      "server/**/*.ts",
       "!server/tests/**",
-      "!server/util/*Data.js",
-      "!server/util/grantAccess.js"
+      "!server/util/*Data.ts",
+      "!server/util/grantAccess.ts"
     ],
     "coverageThreshold": {
       "global": {
@@ -60,6 +83,17 @@
         "lines": 85,
         "statements": 85
       }
-    }
+    },
+    "transform": {
+      "^.+\\.tsx?$": [
+        "@swc/jest"
+      ]
+    },
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js",
+      "json"
+    ]
   }
 }

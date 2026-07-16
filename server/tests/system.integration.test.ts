@@ -1,4 +1,4 @@
-jest.mock('../../config/database.js', () => ({ connectDatabase: jest.fn() }));
+jest.mock('../../config/database', () => ({ connectDatabase: jest.fn() }));
 jest.mock('jsonwebtoken', () => ({ verify: jest.fn() }));
 jest.mock('../models/userModel');
 jest.mock('../models/catModel');

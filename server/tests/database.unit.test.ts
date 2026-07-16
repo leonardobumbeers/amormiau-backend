@@ -1,4 +1,8 @@
-const loadDatabase = ({ mongoUrl, readyState = 0, connect }) => {
+const loadDatabase = ({ mongoUrl, readyState = 0, connect }: {
+  mongoUrl: string;
+  readyState?: number;
+  connect?: jest.Mock;
+}) => {
   jest.resetModules();
   process.env.MONGODB_URL = mongoUrl;
   const connection = { readyState, on: jest.fn() };
