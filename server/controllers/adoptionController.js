@@ -47,7 +47,16 @@ exports.getMyAdoptions = async (req, res, next) => {
 
 exports.getAdoptions = async (req, res, next) => {
   try {
-    const filter = req.query.status ? { status: req.query.status } : {};
+    const allowedStatuses = ['pending', 'approved', 'rejected'];
+    let filter = {};
+
+    if (req.query.status !== undefined) {
+      if (typeof req.query.status !== 'string' || !allowedStatuses.includes(req.query.status)) {
+        return res.status(400).json({ message: 'Invalid status filter' });
+      }
+      filter = { status: { $eq: req.query.status } };
+    }
+
     const adoptions = await Adoption.find(filter)
       .populate('cat')
       .populate('user', '-password -accessToken')
