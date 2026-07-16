@@ -13,7 +13,7 @@
   "license": "ISC",
   "dependencies": {
     "accesscontrol": "^2.2.1",
-    "bcrypt": "^5.0.0",
+    "bcrypt": "^5.1.1",
     "body-parser": "^1.19.0",
     "cors": "^2.8.5",
     "cross-fetch": "^3.1.5",
@@ -25,14 +25,14 @@
     "mongoose": "^5.13.20",
     "morgan": "^1.10.0",
     "multer": "^1.4.4",
-    "nodemon": "^2.0.20",
-    "swagger-jsdoc": "^6.1.0",
+    "nodemon": "^3.1.14",
+    "swagger-jsdoc": "^6.3.0",
     "swagger-ui-express": "^4.3.0"
   },
   "devDependencies": {
     "@faker-js/faker": "^6.0.0-alpha.7",
     "formdata-node": "^4.3.2",
-    "jest": "^27.5.1",
+    "jest": "^30.4.2",
     "mz": "^2.7.0",
     "supertest": "^6.2.2"
   }
