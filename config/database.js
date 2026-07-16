@@ -4,7 +4,9 @@ mongoose.set('strictQuery', true);
 require("dotenv/config");
 
 
-mongoose.connect(process.env.MONGODB_URL)
+mongoose.connect(process.env.MONGODB_URL, {
+    serverSelectionTimeoutMS: 5000
+})
 // .then(() => console.log('Conectou no MongoDB com sucesso!'))
 // .catch((err) => console.log(err));
 
