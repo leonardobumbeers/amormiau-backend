@@ -6,12 +6,7 @@ const mongoose = require('mongoose');
 
 const grantAccess = new Promise((resolve, reject) => {
     // make a connection 
-    mongoose.connect(process.env.MONGODB_URL,
-        {
-            useNewUrlParser: true,
-            useUnifiedTopology: true,
-            useCreateIndex: true
-        })
+    mongoose.connect(process.env.MONGODB_URL)
 
     // get reference to database
     var db = mongoose.connection;
@@ -49,12 +44,7 @@ const grantAccess = new Promise((resolve, reject) => {
 
 const clearDatabase = async () => {
 
-    mongoose.connect(process.env.MONGODB_URL,
-        {
-            useNewUrlParser: true,
-            useUnifiedTopology: true,
-            useCreateIndex: true
-        })
+    mongoose.connect(process.env.MONGODB_URL)
 
     // get reference to database
     var db = mongoose.connection;
@@ -70,7 +60,6 @@ const clearDatabase = async () => {
 }
 
 module.exports = { grantAccess, clearDatabase };
-
 
 
 
