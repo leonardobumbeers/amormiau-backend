@@ -5,7 +5,12 @@ const Cat = require('../models/catModel');
 
 exports.requestAdoption = async (req, res, next) => {
   try {
-    const cat = await Cat.findById(req.body.catId);
+    const { catId } = req.body || {};
+    if (typeof catId !== 'string' || !mongoose.Types.ObjectId.isValid(catId)) {
+      return res.status(400).json({ message: 'Invalid catId' });
+    }
+
+    const cat = await Cat.findById(catId);
     if (!cat) throw new Error('Cat not found');
     if (!cat.available) throw new Error('Cat is not available for adoption');
 
