@@ -61,7 +61,7 @@ exports.signup = async (req, res, next) => {
 
     const { name, email, password, cpf, rg, birthDate, phone, address, city, state } = req.body
 
-    let user = await User.findOne({ email });
+    let user = await User.findOne({ email: { $eq: email } });
     if (user) {
       throw new Error('User already exists');
     }
