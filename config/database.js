@@ -5,15 +5,27 @@ mongoose.set('bufferCommands', false);
 require("dotenv/config");
 
 const mongoUrl = process.env.MONGODB_URL;
+let connectionPromise;
 
-if (mongoUrl) {
-    mongoose.connect(mongoUrl, {
-        serverSelectionTimeoutMS: 5000
-    }).catch((error) => {
-        console.error('MongoDB connection failed:', error.message);
-    });
-} else {
-    console.warn('MONGODB_URL is not configured; database endpoints are unavailable.');
+function connectDatabase() {
+    if (mongoose.connection.readyState === 1) {
+        return Promise.resolve(mongoose.connection);
+    }
+
+    if (!mongoUrl) {
+        return Promise.reject(new Error('MONGODB_URL is not configured'));
+    }
+
+    if (!connectionPromise) {
+        connectionPromise = mongoose.connect(mongoUrl, {
+            serverSelectionTimeoutMS: 10000
+        }).catch((error) => {
+            connectionPromise = undefined;
+            throw error;
+        });
+    }
+
+    return connectionPromise;
 }
 
 mongoose.connection.on('connected', function () {
@@ -27,3 +39,5 @@ mongoose.connection.on('error', function (err) {
 mongoose.connection.on('disconnected', function () {
     console.log('Mongoose default connection disconnected');
 });
+
+module.exports = { connectDatabase };
