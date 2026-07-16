@@ -1,7 +1,7 @@
 jest.mock('../../config/database.js', () => ({}));
 
 const request = require('supertest');
-const app = require('../../index');
+const app = require('../../api');
 
 describe('Vercel serverless handler', () => {
   it('routes the homepage to the API documentation', async () => {
