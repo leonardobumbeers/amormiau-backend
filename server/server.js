@@ -8,7 +8,7 @@ const User = require('./models/userModel')
 const Cat = require('./models/catModel')
 const routes = require('./routes/route.js');
 const adminRouter = require('./routes/admin.js');
-require('../config/database.js');
+const { connectDatabase } = require('../config/database.js');
 require("dotenv").config({
   path: path.join(__dirname, "../.env")
 });
@@ -41,6 +41,7 @@ app.use(
 app.use(async (req, res, next) => {
   if (req.headers["x-access-token"]) {
     try {
+      await connectDatabase();
       const accessToken = req.headers["x-access-token"];
       const { userId, exp } = await jwt.verify(accessToken, process.env.JWT_SECRET);
       // If token has expired
@@ -59,13 +60,14 @@ app.use(async (req, res, next) => {
   }
 });
 app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument, options));
-app.get('/health', (req, res) => {
-  const databaseConnected = require('mongoose').connection.readyState === 1;
-
-  res.status(databaseConnected ? 200 : 503).json({
-    status: databaseConnected ? 'ok' : 'unavailable',
-    database: databaseConnected ? 'connected' : 'disconnected'
-  });
+app.get('/health', async (req, res) => {
+  try {
+    await connectDatabase();
+    res.status(200).json({ status: 'ok', database: 'connected' });
+  } catch (error) {
+    console.error('MongoDB health check failed:', error.message);
+    res.status(503).json({ status: 'unavailable', database: 'disconnected' });
+  }
 });
 app.get('/', (req, res) => {
   const databaseConnected = require('mongoose').connection.readyState === 1;
@@ -76,6 +78,16 @@ app.get('/', (req, res) => {
     database: databaseConnected ? 'connected' : 'disconnected',
     docs: '/docs'
   });
+});
+
+app.use(async (req, res, next) => {
+  try {
+    await connectDatabase();
+    next();
+  } catch (error) {
+    console.error('MongoDB request connection failed:', error.message);
+    res.status(503).json({ error: 'Database unavailable' });
+  }
 });
 
 app.use('/', routes);

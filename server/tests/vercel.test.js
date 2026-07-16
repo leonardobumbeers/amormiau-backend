@@ -1,4 +1,6 @@
-jest.mock('../../config/database.js', () => ({}));
+jest.mock('../../config/database.js', () => ({
+  connectDatabase: jest.fn().mockRejectedValue(new Error('MongoDB unavailable'))
+}));
 
 const request = require('supertest');
 const app = require('../../api');

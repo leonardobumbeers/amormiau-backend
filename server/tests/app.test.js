@@ -1,7 +1,10 @@
-jest.mock('../../config/database.js', () => ({}));
+jest.mock('../../config/database.js', () => ({
+  connectDatabase: jest.fn().mockRejectedValue(new Error('MongoDB unavailable'))
+}));
 
 const request = require('supertest');
 const app = require('../server');
+const { connectDatabase } = require('../../config/database');
 
 describe('application endpoints', () => {
   it('serves API status from the homepage', async () => {
@@ -24,5 +27,14 @@ describe('application endpoints', () => {
       status: 'unavailable',
       database: 'disconnected'
     });
+  });
+
+  it('waits for MongoDB before reporting a healthy connection', async () => {
+    connectDatabase.mockResolvedValueOnce({});
+
+    const response = await request(app).get('/health');
+
+    expect(response.status).toBe(200);
+    expect(response.body).toEqual({ status: 'ok', database: 'connected' });
   });
 });
