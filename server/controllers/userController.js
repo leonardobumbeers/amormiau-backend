@@ -82,7 +82,10 @@ exports.login = async (req, res, next) => {
   const { email, password } = req.body;
 
   try {
-    let user = await User.findOne({ email });
+    if (typeof email !== 'string') {
+      throw new Error('Incorrect email or password');
+    }
+    let user = await User.findOne({ email: { $eq: email } });
     if (!user)
       throw new Error('Incorrect email or password')
     const validPassword = await validatePassword(password, user.password);
