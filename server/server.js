@@ -59,6 +59,9 @@ app.use(async (req, res, next) => {
     next();
   }
 });
+app.get('/docs/swagger-ui.css', (req, res) => {
+  res.type('text/css').sendFile(require.resolve('swagger-ui-dist/swagger-ui.css'));
+});
 app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument, options));
 app.get('/health', async (req, res) => {
   try {
