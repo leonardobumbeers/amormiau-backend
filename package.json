@@ -14,6 +14,7 @@
     "test:unit": "jest --runInBand --testPathPatterns=unit",
     "test:integration": "jest --runInBand --testPathPatterns='integration|app|vercel'",
     "test:coverage": "jest --runInBand --coverage",
+    "test:smoke:production": "jest --runInBand --config jest.production.config.js",
     "test:watch": "jest --watchAll"
   },
   "author": "",
@@ -55,7 +56,7 @@
     "coverageThreshold": {
       "global": {
         "branches": 80,
-        "functions": 75,
+        "functions": 90,
         "lines": 85,
         "statements": 85
       }

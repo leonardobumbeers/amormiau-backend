@@ -5,6 +5,7 @@ const userController = require('../controllers/userController');
 const multer = require("multer");
 const multerConfig = require("../util/multer");
 const { roles } = require('../roles');
+const { sanitizeUser } = require('../util/privacy');
 
 exports.grantAccess = function (action, resource) {
   return async (req, res, next) => {
@@ -177,7 +178,7 @@ exports.adoptCat = async (req, res, next) => {
       })
 
     res.status(200).json({
-      data: catNew, userNew,
+      data: catNew, userNew: sanitizeUser(userNew),
       message: "Cat and User updated successfully"
     });
 

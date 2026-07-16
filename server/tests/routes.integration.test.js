@@ -8,6 +8,7 @@ jest.mock('../controllers/userController', () => {
     updateUser: handler('updateUser'),
     deleteUser: handler('deleteUser'),
     allowIfLoggedin: (req, res, next) => next(),
+    allowOwnerOrRoles: () => (req, res, next) => next(),
     grantAccess: () => (req, res, next) => next()
   };
 });

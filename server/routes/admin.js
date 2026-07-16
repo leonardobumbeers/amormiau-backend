@@ -18,7 +18,7 @@ router.put('/cat/:catId', userController.allowIfLoggedin, userController.grantAc
 
 router.delete('/cat/:catId', userController.allowIfLoggedin, userController.grantAccess('deleteAny', 'profile'), adminController.deleteCat);
 
-router.get('/user/:userId', userController.allowIfLoggedin, userController.getUser);
+router.get('/user/:userId', userController.allowIfLoggedin, userController.allowOwnerOrRoles('supervisor', 'admin'), userController.getUser);
 
 router.get('/users', userController.allowIfLoggedin, userController.grantAccess('readAny', 'profile'), userController.getUsers);
 

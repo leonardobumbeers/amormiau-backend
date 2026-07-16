@@ -1,4 +1,6 @@
 const mongoose = require('mongoose');
+const fs = require('fs');
+const path = require('path');
 const User = require('../models/userModel');
 const Cat = require('../models/catModel');
 
@@ -33,5 +35,22 @@ describe('mongoose models', () => {
     const catId = new mongoose.Types.ObjectId();
     const user = new User({ email: 'user@example.com', password: 'hash', cats: [catId.toString()] });
     expect(user.cats[0]).toEqual(catId);
+  });
+
+  it('removes an uploaded image when a cat document is removed', async () => {
+    const unlink = jest.spyOn(fs, 'unlink').mockImplementation((file, callback) => callback(null));
+    const removeHook = Cat.schema.s.hooks._pres
+      .get('remove')
+      .map(hook => hook.fn)
+      .find(hook => hook.name === '');
+
+    removeHook.call({ images: [{ key: 'cat-image.jpg' }] });
+    await Promise.resolve();
+
+    expect(unlink).toHaveBeenCalledWith(
+      path.resolve(__dirname, '..', '..', 'tmp', 'uploads', 'cat-image.jpg'),
+      expect.any(Function)
+    );
+    unlink.mockRestore();
   });
 });

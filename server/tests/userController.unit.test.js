@@ -55,6 +55,24 @@ describe('userController', () => {
         error: "You don't have enough permission to perform this action"
       });
     });
+
+    it('allows profile owners and privileged readers but rejects other users', () => {
+      req.params.userId = 'u1';
+      req.user = { _id: 'u1', role: 'basic' };
+      controller.allowOwnerOrRoles('supervisor', 'admin')(req, res, next);
+      expect(next).toHaveBeenCalledTimes(1);
+
+      next.mockClear();
+      req.user = { _id: 'supervisor-1', role: 'supervisor' };
+      controller.allowOwnerOrRoles('supervisor', 'admin')(req, res, next);
+      expect(next).toHaveBeenCalledTimes(1);
+
+      next.mockClear();
+      req.user = { _id: 'other-user', role: 'basic' };
+      controller.allowOwnerOrRoles('supervisor', 'admin')(req, res, next);
+      expect(next).not.toHaveBeenCalled();
+      expect(res.status).toHaveBeenCalledWith(403);
+    });
   });
 
   describe('signup', () => {
@@ -76,9 +94,11 @@ describe('userController', () => {
       );
       expect(save).toHaveBeenCalled();
       expect(res.json.mock.calls[0][0]).toMatchObject({
-        data: { email: 'leo@example.com', password: 'hashed-password', role: 'basic', accessToken: 'signed-token' },
+        data: { email: 'leo@example.com', role: 'basic' },
         message: 'You have signed up successfully'
       });
+      expect(res.json.mock.calls[0][0].data).not.toHaveProperty('password');
+      expect(res.json.mock.calls[0][0].data).not.toHaveProperty('accessToken');
       expect(next).not.toHaveBeenCalled();
     });
 
@@ -87,6 +107,21 @@ describe('userController', () => {
       req.body = { email: 'exists@example.com' };
       await controller.signup(req, res, next);
       expect(next.mock.calls[0][0].message).toBe('User already exists');
+    });
+
+    it('ignores attempts to self-register with an administrative role', async () => {
+      const save = jest.fn().mockResolvedValue(undefined);
+      User.findOne.mockResolvedValue(null);
+      User.mockImplementation(data => ({ ...data, _id: 'u1', save }));
+      bcrypt.hash.mockResolvedValue('hash');
+      jwt.sign.mockReturnValue('token');
+      req.body = {
+        email: 'attacker@example.com', password: 'password', role: 'admin'
+      };
+
+      await controller.signup(req, res, next);
+
+      expect(res.json.mock.calls[0][0].data.role).toBe('basic');
     });
   });
 

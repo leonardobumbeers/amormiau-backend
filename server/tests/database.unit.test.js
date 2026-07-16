@@ -55,4 +55,30 @@ describe('database connection', () => {
     await expect(connectDatabase()).resolves.toEqual({ ready: true });
     expect(connect).toHaveBeenCalledTimes(2);
   });
+
+  it('reports connected, error, and disconnected lifecycle events', () => {
+    const log = jest.spyOn(console, 'log').mockImplementation(() => {});
+    const { connection } = loadDatabase({ mongoUrl: 'mongodb://test' });
+    connection.host = 'mongo.example.com';
+    connection.name = 'amormiau';
+
+    const handlers = Object.fromEntries(
+      connection.on.mock.calls.map(([event, handler]) => [event, handler])
+    );
+
+    handlers.connected();
+    handlers.error(new Error('network unavailable'));
+    handlers.disconnected();
+
+    expect(log).toHaveBeenNthCalledWith(
+      1, 'Database connection open to mongo.example.com amormiau'
+    );
+    expect(log).toHaveBeenNthCalledWith(
+      2, 'Mongoose default connection error: Error: network unavailable'
+    );
+    expect(log).toHaveBeenNthCalledWith(
+      3, 'Mongoose default connection disconnected'
+    );
+    log.mockRestore();
+  });
 });

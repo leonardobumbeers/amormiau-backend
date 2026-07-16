@@ -2,6 +2,7 @@ const User = require('../models/userModel');
 const Cat = require('../models/catModel');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
+const { sanitizeUser, sanitizeUsers } = require('../util/privacy');
 
 const { roles } = require('../roles')
 
@@ -40,10 +41,20 @@ exports.allowIfLoggedin = async (req, res, next) => {
   }
 }
 
+exports.allowOwnerOrRoles = (...rolesAllowed) => (req, res, next) => {
+  const requester = req.user;
+  const isOwner = String(requester._id) === String(req.params.userId);
+  if (isOwner || rolesAllowed.includes(requester.role)) return next();
+
+  return res.status(403).json({
+    error: "You can only access your own personal data"
+  });
+};
+
 exports.signup = async (req, res, next) => {
   try {
 
-    const { name, email, password, cpf, rg, birthDate, phone, address, city, state, role } = req.body
+    const { name, email, password, cpf, rg, birthDate, phone, address, city, state } = req.body
 
     let user = await User.findOne({ email });
     if (user) {
@@ -62,7 +73,7 @@ exports.signup = async (req, res, next) => {
       city: city,
       state: state,
       cats: [],
-      role: role || "basic"
+      role: "basic"
     });
     const accessToken = jwt.sign({ userId: newUser._id }, process.env.JWT_SECRET, {
       expiresIn: "1d"
@@ -70,7 +81,7 @@ exports.signup = async (req, res, next) => {
     newUser.accessToken = accessToken;
     await newUser.save();
     res.json({
-      data: newUser,
+      data: sanitizeUser(newUser),
       message: "You have signed up successfully"
     }).status(200)
   } catch (e) {
@@ -106,7 +117,7 @@ exports.login = async (req, res, next) => {
 exports.getUsers = async (req, res, next) => {
   try {
     const users = await User.find().populate('cats')
-    res.status(200).json({ data: users });
+    res.status(200).json({ data: sanitizeUsers(users) });
   } catch (e) {
     next(e);
   }
@@ -118,7 +129,7 @@ exports.getUser = async (req, res, next) => {
     const user = await User.findById(userId).populate('cats')
     if (!user) throw new Error('User not found');
     res.status(200).json({
-      data: user
+      data: sanitizeUser(user)
     });
   } catch (e) {
     next(e)
@@ -147,7 +158,7 @@ exports.updateUser = async (req, res, next) => {
       })
 
     res.status(200).json({
-      data: userNew,
+      data: sanitizeUser(userNew),
       message: "User has been updated successfully!"
     });
   } catch (e) {
@@ -168,6 +179,5 @@ exports.deleteUser = async (req, res, next) => {
     next(e)
   }
 }
-
 
 
