@@ -59,6 +59,14 @@ app.use(async (req, res, next) => {
   }
 });
 app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument, options));
+app.get('/health', (req, res) => {
+  const databaseConnected = require('mongoose').connection.readyState === 1;
+
+  res.status(databaseConnected ? 200 : 503).json({
+    status: databaseConnected ? 'ok' : 'unavailable',
+    database: databaseConnected ? 'connected' : 'disconnected'
+  });
+});
 app.get('/', (req, res) => {
   res.redirect('/docs');
 });
