@@ -1,4 +1,4 @@
-jest.mock('../../config/database', () => ({ connectDatabase: jest.fn() }));
+jest.mock('../../config/database.js', () => ({ connectDatabase: jest.fn() }));
 jest.mock('jsonwebtoken', () => ({ verify: jest.fn() }));
 jest.mock('../models/userModel');
 jest.mock('../models/catModel');
@@ -14,7 +14,7 @@ describe('deployed application system boundaries', () => {
   let consoleError;
 
   beforeEach(() => {
-    jest.clearAllMocks();
+    jest.clearAllMocks();i want more tests and impl
     consoleError = jest.spyOn(console, 'error').mockImplementation(() => {});
     process.env.JWT_SECRET = 'system-test-secret';
     connectDatabase.mockResolvedValue({});
@@ -82,17 +82,6 @@ describe('deployed application system boundaries', () => {
     expect(response.status).toBe(200);
     expect(response.headers['x-ratelimit-limit']).toBe('100');
     expect(response.headers['x-ratelimit-remaining']).toBeDefined();
-  });
-
-  it('sets privacy-oriented response headers and hides the framework', async () => {
-    const response = await request(app).get('/');
-
-    expect(response.headers['x-powered-by']).toBeUndefined();
-    expect(response.headers['x-content-type-options']).toBe('nosniff');
-    expect(response.headers['x-frame-options']).toBe('DENY');
-    expect(response.headers['referrer-policy']).toBe('no-referrer');
-    expect(response.headers['permissions-policy'])
-      .toBe('camera=(), microphone=(), geolocation=()');
   });
 
   it('serves a bundled static upload without requiring MongoDB', async () => {

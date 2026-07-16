@@ -1,18 +1,21 @@
 const multer = require("multer");
+import type { Request } from 'express';
+import type { FileFilterCallback, StorageEngine } from 'multer';
 const path = require("path");
 const crypto = require("crypto");
 
-const storageTypes = multer.diskStorage({
-  destination: (req, file, cb) => {
+const storageTypes: StorageEngine = multer.diskStorage({
+  destination: (_req: Request, _file: Express.Multer.File, cb: (error: Error | null, destination: string) => void) => {
     cb(null, path.resolve(__dirname, "..", "..", "tmp", "uploads"));
   },
-  filename: (req, file, cb) => {
-    crypto.randomBytes(16, (err, hash) => {
-      if (err) cb(err);
+  filename: (_req: Request, file: Express.Multer.File, cb: (error: Error | null, filename?: string) => void) => {
+    crypto.randomBytes(16, (err: Error | null, hash: Buffer) => {
+      if (err) return cb(err);
 
-      file.key = `${hash.toString("hex")}-${file.originalname}`;
+      const uploadFile = file as Express.Multer.File & { key: string };
+      uploadFile.key = `${hash.toString("hex")}-${file.originalname}`;
 
-      cb(null, file.key);
+      cb(null, uploadFile.key);
     });
   }
 });
@@ -23,7 +26,7 @@ module.exports = {
   limits: {
     fileSize: 15 * 1024 * 1024
   },
-  fileFilter: (req, file, cb) => {
+  fileFilter: (_req: Request, file: Express.Multer.File, cb: FileFilterCallback) => {
     const allowedMimes = [
       "image/jpeg",
       "image/pjpeg",

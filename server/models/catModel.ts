@@ -3,6 +3,10 @@ const Schema = mongoose.Schema;
 const fs = require('fs');
 const path = require('path');
 const { promisify } = require('util');
+import type { HydratedDocument } from 'mongoose';
+
+interface CatImage { key: string }
+interface CatWithImages { images: CatImage[] }
 
 const CatSchema = new Schema({
   name: {
@@ -64,8 +68,11 @@ const CatSchema = new Schema({
   timestamps: true
 });
 
-CatSchema.pre('remove', function () {
-  promisify(fs.unlink)(path.resolve(__dirname, '..', '..', 'tmp', 'uploads', this.images[0].key));
+CatSchema.pre('remove', function (this: HydratedDocument<CatWithImages>) {
+  const image = this.images[0];
+  if (image) {
+    void promisify(fs.unlink)(path.resolve(__dirname, '..', '..', 'tmp', 'uploads', image.key));
+  }
 });
 
 

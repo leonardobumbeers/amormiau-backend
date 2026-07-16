@@ -1,5 +1,9 @@
-module.exports = {
-  testEnvironment: 'node',
-  testRegex: 'production\\.smoke\\.js$',
-  collectCoverage: false
-};
+{
+  "testEnvironment": "node",
+  "testRegex": "production\\.smoke\\.ts$",
+  "collectCoverage": false,
+  "transform": {
+    "^.+\\.tsx?$": ["@swc/jest"]
+  },
+  "moduleFileExtensions": ["ts", "tsx", "js", "json"]
+}

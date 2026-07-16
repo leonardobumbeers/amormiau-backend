@@ -38,11 +38,12 @@ describe('mongoose models', () => {
   });
 
   it('removes an uploaded image when a cat document is removed', async () => {
-    const unlink = jest.spyOn(fs, 'unlink').mockImplementation((file, callback) => callback(null));
-    const removeHook = Cat.schema.s.hooks._pres
+    const unlink = jest.spyOn(fs, 'unlink')
+      .mockImplementation(((_file: string, callback: (error: null) => void) => callback(null)) as any);
+    const removeHook = (Cat.schema.s.hooks._pres
       .get('remove')
       .map(hook => hook.fn)
-      .find(hook => hook.name === '');
+      .find(hook => hook.name === '') as any);
 
     removeHook.call({ images: [{ key: 'cat-image.jpg' }] });
     await Promise.resolve();

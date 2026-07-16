@@ -112,6 +112,7 @@ Use the `BLANK_README.md` to get started.
 This section should list any major frameworks/libraries used to bootstrap your project. Leave any add-ons/plugins for the acknowledgements section. Here are a few examples.
 
 * [Node.js](https://nodejs.org/)
+* [TypeScript](https://www.typescriptlang.org/)
 * [Express.js](https://expressjs.com/)
 * [Jest.js](https://jestjs.io/)
 * [JWT](https://jwt.io/)
@@ -176,10 +177,15 @@ _For more examples, please refer to the [Documentation](https://example.com)_
 The Jest suite separates fast unit tests from HTTP-level API integration tests. The integration tests use Supertest to exercise the Express routes, middleware, controllers, authentication, role-based authorization, error responses, and user/cat workflows without requiring a shared test database.
 
 ```sh
+npm run lint
+npm run typecheck
+npm run build
 npm run test:unit
 npm run test:integration
 npm run test:coverage
 ```
+
+The backend uses strict TypeScript, typed Express request state, typed Mongoose-facing controllers, ESLint flat configuration, and SWC-powered Jest transforms. Production runs compiled JavaScript from `dist`; source TypeScript is never executed by the production container.
 
 Every push and pull request to `master` runs all three quality gates in GitHub Actions. Coverage fails below the thresholds configured in `package.json`, and a production Docker image is built only after the test job succeeds.
 

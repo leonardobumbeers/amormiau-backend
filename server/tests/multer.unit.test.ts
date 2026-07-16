@@ -43,7 +43,7 @@ describe('multer configuration', () => {
       null, path.resolve(__dirname, '..', '..', 'tmp', 'uploads')
     );
 
-    const file = { originalname: 'miau.jpg' };
+    const file: any = { originalname: 'miau.jpg' };
     const filenameCallback = jest.fn();
     storageOptions.filename({}, file, filenameCallback);
     expect(file.key).toBe(`${Buffer.from('abc123').toString('hex')}-miau.jpg`);

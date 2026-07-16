@@ -1,9 +1,10 @@
 const mongoose = require('mongoose');
+import type { NextFunction, Request, Response } from 'express';
 const Adoption = require('../models/adoptionModel');
 const User = require('../models/userModel');
 const Cat = require('../models/catModel');
 
-exports.requestAdoption = async (req, res, next) => {
+exports.requestAdoption = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { catId } = req.body || {};
     if (typeof catId !== 'string' || !mongoose.Types.ObjectId.isValid(catId)) {
@@ -27,14 +28,14 @@ exports.requestAdoption = async (req, res, next) => {
       message: 'Adoption request submitted successfully'
     });
   } catch (error) {
-    if (error && error.code === 11000) {
+    if (typeof error === 'object' && error !== null && 'code' in error && error.code === 11000) {
       return next(new Error('Adoption request already pending'));
     }
     next(error);
   }
 };
 
-exports.getMyAdoptions = async (req, res, next) => {
+exports.getMyAdoptions = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const adoptions = await Adoption.find({ user: req.user._id })
       .populate('cat')
@@ -45,7 +46,7 @@ exports.getMyAdoptions = async (req, res, next) => {
   }
 };
 
-exports.getAdoptions = async (req, res, next) => {
+exports.getAdoptions = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const allowedStatuses = ['pending', 'approved', 'rejected'];
     let filter = {};
@@ -68,7 +69,7 @@ exports.getAdoptions = async (req, res, next) => {
   }
 };
 
-exports.decideAdoption = async (req, res, next) => {
+exports.decideAdoption = async (req: Request, res: Response, next: NextFunction) => {
   const session = await mongoose.startSession();
   try {
     const { decision, reason } = req.body;
@@ -91,7 +92,7 @@ exports.decideAdoption = async (req, res, next) => {
       if (decision === 'approved') {
         if (!cat.available) throw new Error('Cat is not available for adoption');
         cat.available = false;
-        if (!user.cats.some(catId => String(catId) === String(cat._id))) {
+        if (!user.cats.some((catId: unknown) => String(catId) === String(cat._id))) {
           user.cats.push(cat._id);
         }
         await cat.save({ session });

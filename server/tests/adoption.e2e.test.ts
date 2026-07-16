@@ -28,8 +28,8 @@ jest.mock('multer', () => () => ({ array: () => (req, res, next) => next() }));
 jest.mock('../util/multer', () => ({}));
 
 jest.mock('../models/userModel', () => {
-  function User(data) {
-    Object.assign(this, data, { _id: mockId('user') });
+  function User(this: any, data: any) {
+    Object.assign(this, data, { _id: mockId() });
     this.save = jest.fn(async () => {
       if (!mockState.users.includes(this)) mockState.users.push(this);
       return this;
@@ -51,8 +51,8 @@ jest.mock('../models/userModel', () => {
 });
 
 jest.mock('../models/catModel', () => {
-  function Cat(data) {
-    Object.assign(this, data, { _id: mockId('cat') });
+  function Cat(this: any, data: any) {
+    Object.assign(this, data, { _id: mockId() });
     this.save = jest.fn(async () => {
       if (!mockState.cats.includes(this)) mockState.cats.push(this);
       return this;
@@ -65,11 +65,11 @@ jest.mock('../models/catModel', () => {
 });
 
 jest.mock('../models/adoptionModel', () => {
-  const Adoption = {};
+  const Adoption: any = {};
   Adoption.create = jest.fn(async data => {
     const adoption = {
       ...data,
-      _id: mockId('adoption'),
+      _id: mockId(),
       status: 'pending',
       createdAt: new Date(),
       save: jest.fn(async function save() { return this; })

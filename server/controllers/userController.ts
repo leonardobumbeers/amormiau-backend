@@ -1,21 +1,29 @@
 const User = require('../models/userModel');
-const Cat = require('../models/catModel');
+import type { NextFunction, Request, Response } from 'express';
+
+interface MutableUser {
+  role?: unknown;
+  email?: unknown;
+  password?: unknown;
+  cats?: unknown;
+  save(): Promise<unknown>;
+}
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const { sanitizeUser, sanitizeUsers } = require('../util/privacy');
 
 const { roles } = require('../roles')
 
-async function hashPassword(password) {
+async function hashPassword(password: string): Promise<string> {
   return await bcrypt.hash(password, 10);
 }
 
-async function validatePassword(plainPassword, hashedPassword) {
+async function validatePassword(plainPassword: string, hashedPassword: string): Promise<boolean> {
   return await bcrypt.compare(plainPassword, hashedPassword);
 }
 
-exports.grantAccess = function (action, resource) {
-  return async (req, res, next) => {
+exports.grantAccess = function (action: string, resource: string) {
+  return async (req: Request, res: Response, next: NextFunction) => {
     try {
       const permission = roles.can(req.user.role)[action](resource);
       if (!permission.granted) {
@@ -30,7 +38,7 @@ exports.grantAccess = function (action, resource) {
   }
 }
 
-exports.allowIfLoggedin = async (req, res, next) => {
+exports.allowIfLoggedin = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const user = res.locals.loggedInUser;
     if (!user) throw new Error("You need to be logged in to access this route")
@@ -41,7 +49,7 @@ exports.allowIfLoggedin = async (req, res, next) => {
   }
 }
 
-exports.allowOwnerOrRoles = (...rolesAllowed) => (req, res, next) => {
+exports.allowOwnerOrRoles = (...rolesAllowed: string[]) => (req: Request, res: Response, next: NextFunction) => {
   const requester = req.user;
   const isOwner = String(requester._id) === String(req.params.userId);
   if (isOwner || rolesAllowed.includes(requester.role)) return next();
@@ -51,17 +59,17 @@ exports.allowOwnerOrRoles = (...rolesAllowed) => (req, res, next) => {
   });
 };
 
-exports.allowRoles = (...rolesAllowed) => (req, res, next) => {
+exports.allowRoles = (...rolesAllowed: string[]) => (req: Request, res: Response, next: NextFunction) => {
   if (rolesAllowed.includes(req.user.role)) return next();
   return res.status(403).json({ error: 'Your role cannot perform this action' });
 };
 
-exports.signup = async (req, res, next) => {
+exports.signup = async (req: Request, res: Response, next: NextFunction) => {
   try {
 
     const { name, email, password, cpf, rg, birthDate, phone, address, city, state } = req.body
 
-    let user = await User.findOne({ email: { $eq: email } });
+    const user = await User.findOne({ email: { $eq: email } });
     if (user) {
       throw new Error('User already exists');
     }
@@ -94,14 +102,14 @@ exports.signup = async (req, res, next) => {
   }
 }
 
-exports.login = async (req, res, next) => {
+exports.login = async (req: Request, res: Response, next: NextFunction) => {
   const { email, password } = req.body;
 
   try {
     if (typeof email !== 'string') {
       throw new Error('Incorrect email or password');
     }
-    let user = await User.findOne({ email: { $eq: email } });
+    const user = await User.findOne({ email: { $eq: email } });
     if (!user)
       throw new Error('Incorrect email or password')
     const validPassword = await validatePassword(password, user.password);
@@ -119,7 +127,7 @@ exports.login = async (req, res, next) => {
   }
 }
 
-exports.getUsers = async (req, res, next) => {
+exports.getUsers = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const users = await User.find().populate('cats')
     res.status(200).json({ data: sanitizeUsers(users) });
@@ -128,7 +136,7 @@ exports.getUsers = async (req, res, next) => {
   }
 }
 
-exports.getUser = async (req, res, next) => {
+exports.getUser = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const userId = req.params.userId;
     const user = await User.findById(userId).populate('cats')
@@ -141,7 +149,7 @@ exports.getUser = async (req, res, next) => {
   }
 }
 
-exports.updateUser = async (req, res, next) => {
+exports.updateUser = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const updatedEmail = req.body.email;
     const updatedPassword = req.body.password;
@@ -153,8 +161,8 @@ exports.updateUser = async (req, res, next) => {
     const user = await User.findById(userId)
     if (!user) throw new Error('User not found');
 
-    var userNew = await User.findById(userId)
-      .then(user => {
+    const userNew = await User.findById(userId)
+      .then((user: MutableUser) => {
         user.role = updatedRole || "basic";
         user.email = updatedEmail;
         user.password = hashedPassword;
@@ -172,7 +180,7 @@ exports.updateUser = async (req, res, next) => {
 }
 
 
-exports.deleteUser = async (req, res, next) => {
+exports.deleteUser = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const userId = req.params.userId;
     await User.findByIdAndDelete(userId);
@@ -184,4 +192,3 @@ exports.deleteUser = async (req, res, next) => {
     next(e)
   }
 }
-

@@ -9,7 +9,7 @@ const jwt = require('jsonwebtoken');
 const controller = require('../controllers/userController');
 
 const response = () => {
-  const res = {};
+  const res: any = {};
   res.status = jest.fn(() => res);
   res.json = jest.fn(() => res);
   res.locals = {};
