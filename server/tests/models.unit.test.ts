@@ -4,6 +4,8 @@ const path = require('path');
 const User = require('../models/userModel');
 const Cat = require('../models/catModel');
 
+type RemoveHook = (this: { images: Array<{ key: string }> }) => void;
+
 describe('mongoose models', () => {
   it('validates required user credentials', () => {
     const errors = new User({}).validateSync().errors;
@@ -39,11 +41,11 @@ describe('mongoose models', () => {
 
   it('removes an uploaded image when a cat document is removed', async () => {
     const unlink = jest.spyOn(fs, 'unlink')
-      .mockImplementation(((_file: string, callback: (error: null) => void) => callback(null)) as any);
+      .mockImplementation(((_file: string, callback: (error: null) => void) => callback(null)) as unknown as typeof fs.unlink);
     const removeHook = (Cat.schema.s.hooks._pres
       .get('remove')
       .map(hook => hook.fn)
-      .find(hook => hook.name === '') as any);
+      .find(hook => hook.name === '') as unknown as RemoveHook);
 
     removeHook.call({ images: [{ key: 'cat-image.jpg' }] });
     await Promise.resolve();

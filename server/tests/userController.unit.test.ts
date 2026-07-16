@@ -7,14 +7,7 @@ const User = require('../models/userModel');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const controller = require('../controllers/userController');
-
-const response = () => {
-  const res: any = {};
-  res.status = jest.fn(() => res);
-  res.json = jest.fn(() => res);
-  res.locals = {};
-  return res;
-};
+const { createMockResponse: response } = require('./helpers/mockResponse');
 
 describe('userController', () => {
   let req;

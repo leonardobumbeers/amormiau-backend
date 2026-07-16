@@ -4,14 +4,10 @@ jest.mock('../models/catModel');
 const User = require('../models/userModel');
 const Cat = require('../models/catModel');
 const controller = require('../controllers/adminController');
+const { createMockResponse: response } = require('./helpers/mockResponse');
 
-const response = () => {
-  const res: any = {};
-  res.status = jest.fn(() => res);
-  res.json = jest.fn(() => res);
-  res.locals = {};
-  return res;
-};
+interface AdoptionUserMock { cats?: string[]; save: jest.Mock }
+interface AdoptionCatMock { available?: boolean; save: jest.Mock }
 
 describe('adminController', () => {
   let req;
@@ -113,8 +109,8 @@ describe('adminController', () => {
   });
 
   it('adopts a cat for an existing user', async () => {
-    const user: any = { save: jest.fn().mockResolvedValue({ _id: 'u1', cats: ['c1'] }) };
-    const cat: any = { save: jest.fn().mockResolvedValue({ _id: 'c1', available: false }) };
+    const user: AdoptionUserMock = { save: jest.fn().mockResolvedValue({ _id: 'u1', cats: ['c1'] }) };
+    const cat: AdoptionCatMock = { save: jest.fn().mockResolvedValue({ _id: 'c1', available: false }) };
     User.findOneAndUpdate.mockResolvedValue(null);
     User.findById.mockResolvedValueOnce(user).mockResolvedValueOnce(user);
     Cat.findById.mockResolvedValueOnce(cat).mockResolvedValueOnce(cat);

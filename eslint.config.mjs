@@ -27,13 +27,11 @@ export default tseslint.config(
       globals: { ...globals.node, ...globals.jest }
     },
     rules: {
-      '@typescript-eslint/no-explicit-any': 'off',
       '@typescript-eslint/no-require-imports': 'off'
     }
   },
   {
     files: ['server/util/*Data.ts', 'server/util/grantAccess.ts', 'tmp/**/*.ts'],
-    languageOptions: { parserOptions: { projectService: false } },
-    rules: { '@typescript-eslint/no-explicit-any': 'off' }
+    languageOptions: { parserOptions: { projectService: false } }
   }
 );
