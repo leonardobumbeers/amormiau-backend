@@ -1,5 +1,5 @@
 const mockState = { users: [], cats: [], adoptions: [], nextId: 1 };
-const mockId = prefix => `${prefix}-${mockState.nextId++}`;
+const mockId = () => (mockState.nextId++).toString(16).padStart(24, '0');
 const mockQuery = value => {
   const query = {
     populate: jest.fn(() => query),
@@ -9,12 +9,16 @@ const mockQuery = value => {
   return query;
 };
 
-jest.mock('mongoose', () => ({
-  startSession: jest.fn(async () => ({
+jest.mock('mongoose', () => {
+  const mongoose = jest.requireActual('mongoose');
+  return {
+    ...mongoose,
+    startSession: jest.fn(async () => ({
     withTransaction: async callback => callback(),
     endSession: jest.fn(async () => {})
-  }))
-}));
+    }))
+  };
+});
 jest.mock('bcrypt', () => ({
   hash: jest.fn(async password => `hashed:${password}`),
   compare: jest.fn(async (password, hash) => hash === `hashed:${password}`)
@@ -242,7 +246,7 @@ describe('complete adoption HTTP journey', () => {
       save: jest.fn(async function save() { return this; })
     };
     const cat = {
-      _id: 'cat-1', name: 'Sol', available: true,
+      _id: '000000000000000000000101', name: 'Sol', available: true,
       save: jest.fn(async function save() { return this; })
     };
     mockState.users.push(applicant);
@@ -276,5 +280,22 @@ describe('complete adoption HTTP journey', () => {
     expect(applicant.cats).toEqual([]);
     expect(cat.save).not.toHaveBeenCalled();
     expect(applicant.save).not.toHaveBeenCalled();
+  });
+
+  it('rejects a malformed cat identifier before querying persistence', async () => {
+    const applicant = {
+      _id: 'applicant-1', role: 'basic', cats: [],
+      save: jest.fn(async function save() { return this; })
+    };
+    mockState.users.push(applicant);
+
+    const response = await request(app)
+      .post('/adoptions')
+      .set('x-test-user', applicant._id)
+      .send({ catId: 'not-a-mongodb-object-id' });
+
+    expect(response.status).toBe(400);
+    expect(response.body).toEqual({ message: 'Invalid catId' });
+    expect(mockState.adoptions).toEqual([]);
   });
 });
