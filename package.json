@@ -11,6 +11,9 @@
     "dev": "npx nodemon start",
     "start": "node server/server.js",
     "test": "jest",
+    "test:unit": "jest --runInBand --testPathPatterns=unit",
+    "test:integration": "jest --runInBand --testPathPatterns='integration|app|vercel'",
+    "test:coverage": "jest --runInBand --coverage",
     "test:watch": "jest --watchAll"
   },
   "author": "",
@@ -39,5 +42,23 @@
     "jest": "^30.4.2",
     "mz": "^2.7.0",
     "supertest": "^6.2.2"
+  },
+  "jest": {
+    "collectCoverageFrom": [
+      "api/**/*.js",
+      "config/**/*.js",
+      "server/**/*.js",
+      "!server/tests/**",
+      "!server/util/*Data.js",
+      "!server/util/grantAccess.js"
+    ],
+    "coverageThreshold": {
+      "global": {
+        "branches": 80,
+        "functions": 75,
+        "lines": 85,
+        "statements": 85
+      }
+    }
   }
 }

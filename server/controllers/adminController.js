@@ -44,7 +44,7 @@ exports.registerCat = async (req, res, next) => {
       playful,
       affectionate
     } = req.body
-    const images = {} = req.files;
+    const images = req.files || [];
 
     // console.log(JSON.stringify(images, null, 2));
     // if(images.length === 0) throw new Error('No images were uploaded')
@@ -162,7 +162,7 @@ exports.adoptCat = async (req, res, next) => {
     const user = await User.findById(userId)
     if (!user) throw new Error('User not found')
 
-    const cat = await User.findById(catId)
+    const cat = await Cat.findById(catId)
     if (!cat) throw new Error("Cat not found");
 
     var catNew = await Cat.findById(catId)
@@ -172,7 +172,7 @@ exports.adoptCat = async (req, res, next) => {
       })
     var userNew = await User.findById(userId)
       .then(user => {
-        user.cats = catId;
+        user.cats = [catId];
         return user.save()
       })
 

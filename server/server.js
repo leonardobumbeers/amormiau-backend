@@ -8,6 +8,7 @@ const User = require('./models/userModel')
 const Cat = require('./models/catModel')
 const routes = require('./routes/route.js');
 const adminRouter = require('./routes/admin.js');
+const errorHandler = require('./middleware/errorHandler');
 const { connectDatabase } = require('../config/database.js');
 require("dotenv").config({
   path: path.join(__dirname, "../.env")
@@ -95,37 +96,7 @@ app.use(async (req, res, next) => {
 
 app.use('/', routes);
 app.use('/admin', adminRouter);
-app.use(function (error, req, res, next) {
-  if (error.message === "Cat already exists") {
-    res.status(409).json({ error: "Cat already exists" });
-  }
-  if (error.message === "Cat not found") {
-    res.status(404).json({ error: "Cat not found" });
-  }
-  if (error.message === "Cat already adopted") {
-    res.status(409).json({ error: "Cat already adopted" });
-  }
-  if (error.message === "User already exists") {
-    res.status(409).json({ error: "User already exists" });
-  }
-  if (error.message === "User not found") {
-    res.status(404).json({ error: "User not found" });
-  }
-  if (error.message === "Incorrect email or password") {
-    res.status(401).json({ error: "Incorrect email or password" });
-  }
-  if (error.message === "You need to be logged in to access this route") {
-    res.status(401).json({ error: "You need to be logged in to access this route" });
-  }
-  if (error.message === "You don't have enough permission to perform this action") {
-    res.status(401).json({ error: "You don't have enough permission to perform this action" });
-  }
-  if (error.message === "No images were uploaded") {
-    res.status(422).json({ error: "No images were uploaded" });
-  }
-  res.status(500).json({ error: 'Internal server error' });
-
-});
+app.use(errorHandler);
 
 
 
