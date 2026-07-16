@@ -9,6 +9,7 @@ jest.mock('../controllers/userController', () => {
     deleteUser: handler('deleteUser'),
     allowIfLoggedin: (req, res, next) => next(),
     allowOwnerOrRoles: () => (req, res, next) => next(),
+    allowRoles: () => (req, res, next) => next(),
     grantAccess: () => (req, res, next) => next()
   };
 });
@@ -20,6 +21,7 @@ jest.mock('../controllers/adminController', () => {
     getCats: handler('getCats'),
     getCat: handler('getCat'),
     adoptCat: handler('adoptCat'),
+    deprecatedAdoptCat: handler('deprecatedAdoptCat'),
     updateCat: handler('updateCat'),
     deleteCat: handler('deleteCat')
   };
@@ -56,7 +58,7 @@ describe('route integration contracts', () => {
     ['post', '/admin/registerCat', 'registerCat'],
     ['get', '/admin/cats', 'getCats'],
     ['get', '/admin/cat/c1', 'getCat'],
-    ['put', '/admin/adoptCat/c1', 'adoptCat'],
+    ['put', '/admin/adoptCat/c1', 'deprecatedAdoptCat'],
     ['put', '/admin/cat/c1', 'updateCat'],
     ['delete', '/admin/cat/c1', 'deleteCat'],
     ['get', '/admin/user/u1', 'getUser'],

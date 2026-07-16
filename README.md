@@ -191,6 +191,17 @@ PRODUCTION_URL=https://your-api.example.com npm run test:smoke:production
 
 Privacy engineering controls and the remaining operational/legal checklist are documented in [`docs/LGPD-READINESS.md`](docs/LGPD-READINESS.md). This checklist supports risk reduction but is not a legal compliance certification.
 
+## Adoption workflow
+
+Adoption is an auditable request-and-review process:
+
+1. A logged-in user submits `POST /adoptions` with a `catId`.
+2. The user follows their requests with `GET /adoptions/me`.
+3. A supervisor or admin reviews `GET /admin/adoptions?status=pending`.
+4. The reviewer sends `PATCH /admin/adoptions/:requestId/decision` with `approved` or `rejected` and an optional reason.
+
+Approval uses a MongoDB transaction to update the request, cat availability, adopter's cat relationship, reviewer audit fields, and competing requests as one unit. MongoDB must therefore run as a replica set; the included Compose configuration initializes a single-node `rs0` replica set for local development. The legacy direct-adoption endpoint returns `410 Gone` so it cannot bypass review.
+
 
 
 

@@ -51,6 +51,11 @@ exports.allowOwnerOrRoles = (...rolesAllowed) => (req, res, next) => {
   });
 };
 
+exports.allowRoles = (...rolesAllowed) => (req, res, next) => {
+  if (rolesAllowed.includes(req.user.role)) return next();
+  return res.status(403).json({ error: 'Your role cannot perform this action' });
+};
+
 exports.signup = async (req, res, next) => {
   try {
 
@@ -179,5 +184,4 @@ exports.deleteUser = async (req, res, next) => {
     next(e)
   }
 }
-
 

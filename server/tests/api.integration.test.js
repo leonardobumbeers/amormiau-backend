@@ -282,26 +282,16 @@ describe('HTTP API integration', () => {
       expect(response.body.message).toBe('Cat is updated successfully');
     });
 
-    it('adopts a cat and updates both records', async () => {
-      const user = { _id: 'u1', cats: [], save: jest.fn() };
-      const cat = { _id: 'c1', available: true, save: jest.fn() };
-      user.save.mockImplementation(async () => user);
-      cat.save.mockImplementation(async () => cat);
-      User.findOneAndUpdate.mockResolvedValue(null);
-      User.findById.mockResolvedValueOnce(user).mockResolvedValueOnce(user);
-      Cat.findById.mockResolvedValueOnce(cat).mockResolvedValueOnce(cat);
-
+    it('blocks the legacy direct-adoption endpoint', async () => {
       const response = await request(app)
         .put('/admin/adoptCat/c1')
         .set('x-test-role', 'admin')
         .send({ userId: 'u1' });
 
-      expect(response.status).toBe(200);
-      expect(response.body.data.available).toBe(false);
-      expect(response.body.userNew.cats).toEqual(['c1']);
-      expect(User.findOneAndUpdate).toHaveBeenCalledWith(
-        { cats: { $in: ['c1'] } }, { $set: { cats: [] } }
-      );
+      expect(response.status).toBe(410);
+      expect(response.body.error).toContain('Direct adoption is disabled');
+      expect(User.findById).not.toHaveBeenCalled();
+      expect(Cat.findById).not.toHaveBeenCalled();
     });
 
     it('deletes a cat through the admin API', async () => {

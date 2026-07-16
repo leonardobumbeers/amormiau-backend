@@ -8,6 +8,7 @@ const User = require('./models/userModel')
 const Cat = require('./models/catModel')
 const routes = require('./routes/route.js');
 const adminRouter = require('./routes/admin.js');
+const adoptionRouter = require('./routes/adoptions.js');
 const errorHandler = require('./middleware/errorHandler');
 const { connectDatabase } = require('../config/database.js');
 require("dotenv").config({
@@ -105,6 +106,7 @@ app.use(async (req, res, next) => {
 });
 
 app.use('/', routes);
+app.use('/adoptions', adoptionRouter);
 app.use('/admin', adminRouter);
 app.use(errorHandler);
 

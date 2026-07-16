@@ -12,7 +12,7 @@
     "start": "node server/server.js",
     "test": "jest",
     "test:unit": "jest --runInBand --testPathPatterns=unit",
-    "test:integration": "jest --runInBand --testPathPatterns='integration|app|vercel'",
+    "test:integration": "jest --runInBand --testPathPatterns='integration|app|vercel|e2e'",
     "test:coverage": "jest --runInBand --coverage",
     "test:smoke:production": "jest --runInBand --config jest.production.config.js",
     "test:watch": "jest --watchAll"

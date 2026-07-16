@@ -187,6 +187,10 @@ exports.adoptCat = async (req, res, next) => {
   }
 }
 
+exports.deprecatedAdoptCat = (req, res) => res.status(410).json({
+  error: 'Direct adoption is disabled; submit and review an adoption request'
+});
+
 exports.deleteCat = async (req, res, next) => {
   try {
     const catId = req.params.catId;
