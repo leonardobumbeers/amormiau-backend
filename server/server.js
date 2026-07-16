@@ -68,7 +68,14 @@ app.get('/health', (req, res) => {
   });
 });
 app.get('/', (req, res) => {
-  res.redirect('/docs');
+  const databaseConnected = require('mongoose').connection.readyState === 1;
+
+  res.status(200).json({
+    name: 'amormiau-backend',
+    status: 'ok',
+    database: databaseConnected ? 'connected' : 'disconnected',
+    docs: '/docs'
+  });
 });
 
 app.use('/', routes);

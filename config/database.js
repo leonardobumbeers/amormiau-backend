@@ -1,14 +1,20 @@
 const mongoose = require('mongoose');
 mongoose.Promise = global.Promise;
 mongoose.set('strictQuery', true);
+mongoose.set('bufferCommands', false);
 require("dotenv/config");
 
+const mongoUrl = process.env.MONGODB_URL;
 
-mongoose.connect(process.env.MONGODB_URL, {
-    serverSelectionTimeoutMS: 5000
-})
-// .then(() => console.log('Conectou no MongoDB com sucesso!'))
-// .catch((err) => console.log(err));
+if (mongoUrl) {
+    mongoose.connect(mongoUrl, {
+        serverSelectionTimeoutMS: 5000
+    }).catch((error) => {
+        console.error('MongoDB connection failed:', error.message);
+    });
+} else {
+    console.warn('MONGODB_URL is not configured; database endpoints are unavailable.');
+}
 
 mongoose.connection.on('connected', function () {
     console.log(`Database connection open to ${mongoose.connection.host} ${mongoose.connection.name}`);
