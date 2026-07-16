@@ -13,7 +13,7 @@ jobs:
       image: lucasalt/act_base:latest
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v5
         with:
           path: amormiau-backend
       - name: RunOne
