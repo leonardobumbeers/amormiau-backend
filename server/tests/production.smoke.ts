@@ -110,7 +110,9 @@ describe('production API smoke tests', () => {
     const credentials = {
       name: 'Production Smoke Test',
       email: `production-smoke-${unique}@example.com`,
-      password: `Smoke-${unique}`
+      password: `Smoke-${unique}`,
+      cpf: `smoke-cpf-${unique}`,
+      rg: `smoke-rg-${unique}`
     };
     let userId;
     let accessToken;
