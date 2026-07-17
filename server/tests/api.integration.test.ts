@@ -68,6 +68,43 @@ describe('HTTP API integration', () => {
       expect(response.body).toEqual({ error: 'User already exists' });
     });
 
+    it('returns 422 when signup credentials are missing', async () => {
+      const response = await request(app).post('/signup').send({ name: 'No credentials' });
+
+      expect(response.status).toBe(422);
+      expect(response.body).toEqual({ error: 'Email and password are required' });
+      expect(User.findOne).not.toHaveBeenCalled();
+    });
+
+    it('returns 409 for a duplicate unique identity field', async () => {
+      const duplicate = Object.assign(new Error('duplicate key'), { code: 11000 });
+      User.findOne.mockResolvedValue(null);
+      User.mockImplementation(() => ({ _id: 'u1', save: jest.fn().mockRejectedValue(duplicate) }));
+      bcrypt.hash.mockResolvedValue('hashed-password');
+      jwt.sign.mockReturnValue('access-token');
+
+      const response = await request(app)
+        .post('/signup')
+        .send({ email: 'new@example.com', password: 'password', cpf: 'duplicate' });
+
+      expect(response.status).toBe(409);
+      expect(response.body).toEqual({ error: 'A user with these details already exists' });
+    });
+
+    it('returns 503 when authentication is not configured', async () => {
+      delete process.env.JWT_SECRET;
+      User.findOne.mockResolvedValue(null);
+      User.mockImplementation(data => ({ ...data, _id: 'u1', save: jest.fn() }));
+      bcrypt.hash.mockResolvedValue('hashed-password');
+
+      const response = await request(app)
+        .post('/signup')
+        .send({ email: 'new@example.com', password: 'password' });
+
+      expect(response.status).toBe(503);
+      expect(response.body).toEqual({ error: 'Authentication service is not configured' });
+    });
+
     it('logs in with valid credentials and persists the new token', async () => {
       User.findOne.mockResolvedValue({
         _id: 'u1', email: 'leo@example.com', password: 'stored-hash', role: 'admin'
@@ -211,6 +248,28 @@ describe('HTTP API integration', () => {
       expect(response.status).toBe(200);
       expect(response.body).toEqual({ data: null, message: 'User has been deleted' });
       expect(User.findByIdAndDelete).toHaveBeenCalledWith('u1');
+    });
+
+    it('allows a basic user to delete their own account', async () => {
+      User.findByIdAndDelete.mockResolvedValue({ _id: 'u1' });
+
+      const response = await request(app)
+        .delete('/user/u1')
+        .set('x-test-role', 'basic')
+        .set('x-test-user', 'u1');
+
+      expect(response.status).toBe(200);
+      expect(User.findByIdAndDelete).toHaveBeenCalledWith('u1');
+    });
+
+    it('prevents a basic user from deleting another account', async () => {
+      const response = await request(app)
+        .delete('/user/victim-user')
+        .set('x-test-role', 'basic')
+        .set('x-test-user', 'attacker-user');
+
+      expect(response.status).toBe(403);
+      expect(User.findByIdAndDelete).not.toHaveBeenCalled();
     });
 
     it('hides unexpected persistence errors from API clients', async () => {

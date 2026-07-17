@@ -97,7 +97,7 @@ describe('userController', () => {
 
     it('forwards duplicate-user errors', async () => {
       User.findOne.mockResolvedValue({ _id: 'existing' });
-      req.body = { email: 'exists@example.com' };
+      req.body = { email: 'exists@example.com', password: 'password' };
       await controller.signup(req, res, next);
       expect(next.mock.calls[0][0].message).toBe('User already exists');
     });

@@ -170,6 +170,7 @@ app.use(errorHandler);
 
 describe('complete adoption HTTP journey', () => {
   beforeEach(() => {
+    process.env.JWT_SECRET = 'adoption-e2e-secret';
     mockState.users.length = 0;
     mockState.cats.length = 0;
     mockState.adoptions.length = 0;

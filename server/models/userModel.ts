@@ -20,12 +20,16 @@ const UserSchema = new Schema({
 
   cpf: {
     type: String,
-    unique: true
+    trim: true,
+    unique: true,
+    sparse: true
   },
 
   rg: {
     type: String,
-    unique: true
+    trim: true,
+    unique: true,
+    sparse: true
   },
 
   birthDate: {

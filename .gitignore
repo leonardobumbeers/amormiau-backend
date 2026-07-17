@@ -141,3 +141,4 @@ dist
 
 .tern-port
 .vercel
+.env*
