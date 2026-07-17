@@ -18,6 +18,25 @@ async function hashPassword(password: string): Promise<string> {
   return await bcrypt.hash(password, 10);
 }
 
+function requireCredentials(
+  email: unknown,
+  password: unknown,
+  errorMessage = 'Email and password are required'
+): { email: string; password: string } {
+  if (typeof email !== 'string' || !email.trim() || typeof password !== 'string' || !password) {
+    throw new Error(errorMessage);
+  }
+
+  return { email: email.trim().toLowerCase(), password };
+}
+
+function signAccessToken(userId: unknown): string {
+  const secret = process.env.JWT_SECRET;
+  if (!secret) throw new Error('Authentication service is not configured');
+
+  return jwt.sign({ userId }, secret, { expiresIn: '1d' });
+}
+
 async function validatePassword(plainPassword: string, hashedPassword: string): Promise<boolean> {
   return await bcrypt.compare(plainPassword, hashedPassword);
 }
@@ -67,7 +86,8 @@ exports.allowRoles = (...rolesAllowed: string[]) => (req: Request, res: Response
 exports.signup = async (req: Request, res: Response, next: NextFunction) => {
   try {
 
-    const { name, email, password, cpf, rg, birthDate, phone, address, city, state } = req.body
+    const { name, cpf, rg, birthDate, phone, address, city, state } = req.body;
+    const { email, password } = requireCredentials(req.body.email, req.body.password);
 
     const user = await User.findOne({ email: { $eq: email } });
     if (user) {
@@ -88,35 +108,31 @@ exports.signup = async (req: Request, res: Response, next: NextFunction) => {
       cats: [],
       role: "basic"
     });
-    const accessToken = jwt.sign({ userId: newUser._id }, process.env.JWT_SECRET, {
-      expiresIn: "1d"
-    });
+    const accessToken = signAccessToken(newUser._id);
     newUser.accessToken = accessToken;
     await newUser.save();
-    res.json({
+    res.status(200).json({
       data: sanitizeUser(newUser),
       message: "You have signed up successfully"
-    }).status(200)
+    });
   } catch (e) {
     next(e);
   }
 }
 
 exports.login = async (req: Request, res: Response, next: NextFunction) => {
-  const { email, password } = req.body;
-
   try {
-    if (typeof email !== 'string') {
-      throw new Error('Incorrect email or password');
-    }
+    const { email, password } = requireCredentials(
+      req.body.email,
+      req.body.password,
+      'Incorrect email or password'
+    );
     const user = await User.findOne({ email: { $eq: email } });
     if (!user)
       throw new Error('Incorrect email or password')
     const validPassword = await validatePassword(password, user.password);
     if (!validPassword) throw new Error('Incorrect email or password')
-    const accessToken = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
-      expiresIn: "1d"
-    });
+    const accessToken = signAccessToken(user._id);
     await User.findByIdAndUpdate(user._id, { accessToken })
     res.status(200).json({
       data: { email: user.email, role: user.role },

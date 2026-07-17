@@ -36,6 +36,27 @@ async function getWithRetry(path, expectedStatus) {
   throw lastError;
 }
 
+interface RequestOptions {
+  method?: string;
+  body?: string;
+  headers?: Record<string, string>;
+}
+
+async function request(path: string, options: RequestOptions = {}) {
+  const response = await fetch(`${baseUrl}${path}`, {
+    ...options,
+    headers: {
+      'content-type': 'application/json',
+      'user-agent': 'amormiau-production-smoke-test',
+      ...(options.headers || {})
+    },
+    timeout: 15000
+  });
+  const text = await response.text();
+  const body = text ? JSON.parse(text) : null;
+  return { response, body };
+}
+
 describe('production API smoke tests', () => {
   jest.setTimeout(attempts * (15000 + retryDelayMs));
 
@@ -82,6 +103,51 @@ describe('production API smoke tests', () => {
     await expect(response.json()).resolves.toEqual({
       error: 'You need to be logged in to access this route'
     });
+  });
+
+  it('completes the production signup, login, profile and account cleanup flow', async () => {
+    const unique = `${Date.now()}-${Math.random().toString(16).slice(2)}`;
+    const credentials = {
+      name: 'Production Smoke Test',
+      email: `production-smoke-${unique}@example.com`,
+      password: `Smoke-${unique}`
+    };
+    let userId;
+    let accessToken;
+
+    try {
+      const signup = await request('/signup', {
+        method: 'POST', body: JSON.stringify(credentials)
+      });
+      expect(signup.response.status).toBe(200);
+      expect(signup.body.message).toBe('You have signed up successfully');
+      expect(signup.body.data).not.toHaveProperty('password');
+      expect(signup.body.data).not.toHaveProperty('accessToken');
+      userId = signup.body.data._id;
+
+      const login = await request('/login', {
+        method: 'POST', body: JSON.stringify({ email: credentials.email, password: credentials.password })
+      });
+      expect(login.response.status).toBe(200);
+      expect(login.body.data).toMatchObject({ email: credentials.email, role: 'basic' });
+      expect(login.body.accessToken).toEqual(expect.any(String));
+      accessToken = login.body.accessToken;
+
+      const profile = await request(`/user/${userId}`, {
+        headers: { 'x-access-token': accessToken }
+      });
+      expect(profile.response.status).toBe(200);
+      expect(profile.body.data).toMatchObject({ _id: userId, email: credentials.email });
+      expect(profile.body.data).not.toHaveProperty('password');
+      expect(profile.body.data).not.toHaveProperty('accessToken');
+    } finally {
+      if (userId && accessToken) {
+        const cleanup = await request(`/user/${userId}`, {
+          method: 'DELETE', headers: { 'x-access-token': accessToken }
+        });
+        expect(cleanup.response.status).toBe(200);
+      }
+    }
   });
 
   it('returns 404 for an unknown production route', async () => {
