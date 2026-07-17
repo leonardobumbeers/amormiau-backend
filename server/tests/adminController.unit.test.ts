@@ -44,7 +44,7 @@ describe('adminController', () => {
   it('registers a cat and maps uploaded image metadata', async () => {
     const save = jest.fn().mockResolvedValue(undefined);
     Cat.mockImplementation(data => ({ ...data, save }));
-    req.body = { name: 'Miau', birthDate: '2020-01-01', available: false };
+    req.body = { name: 'Miau', birthDate: '2020-01-01', sex: 'Fêmea', available: false };
     req.files = [{ originalname: 'cat.png', key: 'key-cat.png', size: 12, destination: '/uploads' }];
 
     await controller.registerCat(req, res, next);
@@ -53,6 +53,7 @@ describe('adminController', () => {
     expect(res.json.mock.calls[0][0]).toMatchObject({
       data: {
         name: 'Miau',
+        sex: 'Fêmea',
         images: [{ fileName: 'cat.png', key: 'key-cat.png', size: 12, dest: '/uploads' }]
       },
       message: 'Cat is registered successfully'

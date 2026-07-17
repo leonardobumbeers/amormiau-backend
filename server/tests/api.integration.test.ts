@@ -334,11 +334,11 @@ describe('HTTP API integration', () => {
       const response = await request(app)
         .post('/admin/registerCat')
         .set('x-test-role', 'admin')
-        .send({ name: 'Miau', birthDate: '2022-01-01', playful: 4 });
+        .send({ name: 'Miau', birthDate: '2022-01-01', sex: 'Macho', playful: 4 });
 
       expect(response.status).toBe(200);
       expect(response.body).toMatchObject({
-        data: { _id: 'c1', name: 'Miau', playful: 4, images: [] },
+        data: { _id: 'c1', name: 'Miau', sex: 'Macho', playful: 4, images: [] },
         message: 'Cat is registered successfully'
       });
       expect(save).toHaveBeenCalledTimes(1);
