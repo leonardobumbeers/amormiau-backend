@@ -90,6 +90,23 @@ describe('adminController', () => {
     }]);
   });
 
+  it('registers a cat with multiple remotely hosted images', async () => {
+    const save = jest.fn().mockResolvedValue(undefined);
+    Cat.mockImplementation(data => ({ ...data, save }));
+    req.body = {
+      name: 'Luna', birthDate: '2023-01-01',
+      imageUrls: ['https://images.example/one.jpg', 'https://images.example/two.jpg'],
+      imageSourceUrls: ['https://license.example/one', 'https://license.example/two']
+    };
+
+    await controller.registerCat(req, res, next);
+
+    expect(res.json.mock.calls[0][0].data.images).toEqual([
+      { url: 'https://images.example/one.jpg', sourceUrl: 'https://license.example/one' },
+      { url: 'https://images.example/two.jpg', sourceUrl: 'https://license.example/two' }
+    ]);
+  });
+
   it('lists cats', async () => {
     Cat.find.mockResolvedValue([{ _id: 'c1' }]);
     await controller.getCats(req, res, next);
