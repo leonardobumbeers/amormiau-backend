@@ -72,7 +72,7 @@ const CatSchema = new Schema({
 
 CatSchema.pre('remove', function (this: HydratedDocument<CatWithImages>) {
   const image = this.images[0];
-  if (image) {
+  if (image?.key) {
     void promisify(fs.unlink)(path.resolve(__dirname, '..', '..', 'tmp', 'uploads', image.key));
   }
 });

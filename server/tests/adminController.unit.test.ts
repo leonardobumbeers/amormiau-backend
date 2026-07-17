@@ -110,12 +110,22 @@ describe('adminController', () => {
   });
 
   it('updates a cat or forwards not-found', async () => {
-    const cat = { save: jest.fn().mockResolvedValue({ _id: 'c1', name: 'Updated' }) };
+    const cat: { save: jest.Mock; images?: Array<{ url: string; sourceUrl: string }>; [key: string]: unknown } = {
+      save: jest.fn().mockResolvedValue({ _id: 'c1', name: 'Updated' })
+    };
     Cat.findById.mockResolvedValueOnce(cat).mockResolvedValueOnce(cat);
     req.params.catId = 'c1';
-    req.body = { name: 'Updated', available: false, playful: 4 };
+    req.body = {
+      name: 'Updated', available: false, playful: 4,
+      imageUrl: 'https://images.example/updated.jpg',
+      imageSourceUrl: 'https://license.example/updated'
+    };
     await controller.updateCat(req, res, next);
     expect(cat).toMatchObject({ name: 'Updated', available: false, playful: 4 });
+    expect(cat.images).toEqual([{
+      url: 'https://images.example/updated.jpg',
+      sourceUrl: 'https://license.example/updated'
+    }]);
     expect(res.json.mock.calls[0][0]).toMatchObject({ message: 'Cat is updated successfully' });
 
     res = response();
