@@ -1,6 +1,9 @@
 const express = require('express');
 const router = express.Router();
 const userController = require('../controllers/userController');
+const adminController = require('../controllers/adminController');
+
+router.get('/cats', adminController.getAvailableCats);
 
 router.post('/signup', userController.signup);
 

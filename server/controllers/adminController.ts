@@ -100,6 +100,15 @@ exports.getCats = async (req: Request, res: Response, next: NextFunction) => {
   };
 }
 
+exports.getAvailableCats = async (_req: Request, res: Response, next: NextFunction) => {
+  try {
+    const cats = await Cat.find({ available: true });
+    res.status(200).json({ data: cats });
+  } catch (error) {
+    next(error);
+  }
+};
+
 
 exports.getCat = async (req: Request, res: Response, next: NextFunction) => {
   try {
