@@ -4,6 +4,7 @@ const userController = require('../controllers/userController');
 const adminController = require('../controllers/adminController');
 
 router.get('/cats', adminController.getAvailableCats);
+router.get('/cats/:catId', adminController.getAvailableCat);
 
 router.post('/signup', userController.signup);
 
