@@ -86,7 +86,7 @@ exports.allowRoles = (...rolesAllowed: string[]) => (req: Request, res: Response
 exports.signup = async (req: Request, res: Response, next: NextFunction) => {
   try {
 
-    const { name, cpf, rg, birthDate, phone, address, city, state } = req.body;
+    const { name, cpf, rg, birthDate, phone, address, city, state, profession, hadAdoptedBefore, previousAdoption, adultsAtHome, childrenAtHome, childrenAges, homeType, windowsSecured, otherPets, whyAdopt, travelCare, financialConditions, allergies, commitment, interviewComments } = req.body;
     const { email, password } = requireCredentials(req.body.email, req.body.password);
 
     const user = await User.findOne({ email: { $eq: email } });
@@ -105,6 +105,21 @@ exports.signup = async (req: Request, res: Response, next: NextFunction) => {
       address: address,
       city: city,
       state: state,
+      profession,
+      hadAdoptedBefore,
+      previousAdoption,
+      adultsAtHome,
+      childrenAtHome,
+      childrenAges,
+      homeType,
+      windowsSecured,
+      otherPets,
+      whyAdopt,
+      travelCare,
+      financialConditions,
+      allergies,
+      commitment,
+      interviewComments,
       cats: [],
       role: "basic"
     });

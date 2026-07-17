@@ -52,6 +52,22 @@ const UserSchema = new Schema({
     type: String
   },
 
+  profession: { type: String },
+  hadAdoptedBefore: { type: Boolean, default: false },
+  previousAdoption: { type: String },
+  adultsAtHome: { type: Number },
+  childrenAtHome: { type: Number },
+  childrenAges: { type: String },
+  homeType: { type: String },
+  windowsSecured: { type: String },
+  otherPets: { type: String },
+  whyAdopt: { type: String },
+  travelCare: { type: String },
+  financialConditions: { type: String },
+  allergies: { type: String },
+  commitment: { type: String },
+  interviewComments: { type: String },
+
   role: {
     type: String,
     default: 'basic',
