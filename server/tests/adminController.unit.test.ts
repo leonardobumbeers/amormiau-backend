@@ -73,6 +73,23 @@ describe('adminController', () => {
     expect(next.mock.calls[0][0].message).toBe('save failed');
   });
 
+  it('registers a cat with a remotely hosted image and its source', async () => {
+    const save = jest.fn().mockResolvedValue(undefined);
+    Cat.mockImplementation(data => ({ ...data, save }));
+    req.body = {
+      name: 'Luna', birthDate: '2023-01-01',
+      imageUrl: 'https://images.example/luna.jpg',
+      imageSourceUrl: 'https://license.example/luna'
+    };
+
+    await controller.registerCat(req, res, next);
+
+    expect(res.json.mock.calls[0][0].data.images).toEqual([{
+      url: 'https://images.example/luna.jpg',
+      sourceUrl: 'https://license.example/luna'
+    }]);
+  });
+
   it('lists cats', async () => {
     Cat.find.mockResolvedValue([{ _id: 'c1' }]);
     await controller.getCats(req, res, next);

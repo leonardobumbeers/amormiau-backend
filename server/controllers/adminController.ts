@@ -48,7 +48,9 @@ exports.registerCat = async (req: Request, res: Response, next: NextFunction) =>
       available,
       sociable,
       playful,
-      affectionate
+      affectionate,
+      imageUrl,
+      imageSourceUrl
     } = req.body
     const images = Array.isArray(req.files) ? req.files : [];
 
@@ -67,7 +69,7 @@ exports.registerCat = async (req: Request, res: Response, next: NextFunction) =>
       sociable: sociable || 0,
       playful: playful || 0,
       affectionate: affectionate || 0,
-      images: []
+      images: imageUrl ? [{ url: imageUrl, sourceUrl: imageSourceUrl }] : []
 
     });
 

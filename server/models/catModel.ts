@@ -5,7 +5,7 @@ const path = require('path');
 const { promisify } = require('util');
 import type { HydratedDocument } from 'mongoose';
 
-interface CatImage { key: string }
+interface CatImage { key?: string; url?: string; sourceUrl?: string }
 interface CatWithImages { images: CatImage[] }
 
 const CatSchema = new Schema({
@@ -61,7 +61,9 @@ const CatSchema = new Schema({
       fileName: String,
       key: String,
       size: Number,
-      dest: String
+      dest: String,
+      url: String,
+      sourceUrl: String
     }
   ]
 }, {
