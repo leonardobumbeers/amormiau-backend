@@ -239,6 +239,16 @@ describe('HTTP API integration', () => {
   });
 
   describe('cat management', () => {
+    it('lists only available cats without requiring authentication', async () => {
+      Cat.find.mockResolvedValue([{ _id: 'c1', name: 'Miau', available: true }]);
+
+      const response = await request(app).get('/cats');
+
+      expect(response.status).toBe(200);
+      expect(response.body.data).toEqual([{ _id: 'c1', name: 'Miau', available: true }]);
+      expect(Cat.find).toHaveBeenCalledWith({ available: true });
+    });
+
     it('registers a cat through the admin API', async () => {
       const save = jest.fn().mockResolvedValue(undefined);
       Cat.mockImplementation(data => ({ ...data, _id: 'c1', save }));
