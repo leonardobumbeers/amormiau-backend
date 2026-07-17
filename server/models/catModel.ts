@@ -19,6 +19,11 @@ const CatSchema = new Schema({
     required: true
   },
 
+  sex: {
+    type: String,
+    enum: ['Macho', 'Fêmea']
+  },
+
   weight: {
     type: String
   },

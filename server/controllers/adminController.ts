@@ -2,7 +2,7 @@ const User = require('../models/userModel');
 import type { NextFunction, Request, Response } from 'express';
 
 interface MutableCat {
-  name?: unknown; birthDate?: unknown; weight?: unknown; sterilized?: unknown;
+  name?: unknown; birthDate?: unknown; sex?: unknown; weight?: unknown; sterilized?: unknown;
   specialCat?: unknown; description?: unknown; available?: unknown;
   sociable?: unknown; playful?: unknown; affectionate?: unknown;
   images?: unknown;
@@ -58,6 +58,7 @@ exports.registerCat = async (req: Request, res: Response, next: NextFunction) =>
     const {
       name,
       birthDate,
+      sex,
       weight,
       sterilized,
       specialCat,
@@ -76,6 +77,7 @@ exports.registerCat = async (req: Request, res: Response, next: NextFunction) =>
     const newCat = new Cat({
       name: name,
       birthDate: birthDate,
+      sex: sex,
       weight: weight,
       sterilized: sterilized,
       specialCat: specialCat,
@@ -155,6 +157,7 @@ exports.updateCat = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const updatedName = req.body.name;
     const updatedBirthDate = req.body.birthDate;
+    const updatedSex = req.body.sex;
     const updatedWeight = req.body.weight;
     const updatedSterilized = req.body.sterilized;
     const updatedSpecialCat = req.body.specialCat;
@@ -173,6 +176,7 @@ exports.updateCat = async (req: Request, res: Response, next: NextFunction) => {
       .then((cat: MutableCat) => {
         cat.name = updatedName;
         cat.birthDate = updatedBirthDate;
+        cat.sex = updatedSex;
         cat.weight = updatedWeight;
         cat.sterilized = updatedSterilized;
         cat.specialCat = updatedSpecialCat;
