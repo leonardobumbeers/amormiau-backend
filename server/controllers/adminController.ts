@@ -5,6 +5,7 @@ interface MutableCat {
   name?: unknown; birthDate?: unknown; weight?: unknown; sterilized?: unknown;
   specialCat?: unknown; description?: unknown; available?: unknown;
   sociable?: unknown; playful?: unknown; affectionate?: unknown;
+  images?: unknown;
   save(): Promise<unknown>;
 }
 interface MutableUser { cats: unknown[]; save(): Promise<unknown> }
@@ -138,6 +139,8 @@ exports.updateCat = async (req: Request, res: Response, next: NextFunction) => {
     const updatedSociable = req.body.sociable;
     const updatedPlayful = req.body.playful;
     const updatedAffectionate = req.body.affectionate;
+    const updatedImageUrl = req.body.imageUrl;
+    const updatedImageSourceUrl = req.body.imageSourceUrl;
 
     const catId = req.params.catId;
     const cat = await Cat.findById(catId)
@@ -155,6 +158,9 @@ exports.updateCat = async (req: Request, res: Response, next: NextFunction) => {
         cat.sociable = updatedSociable;
         cat.playful = updatedPlayful;
         cat.affectionate = updatedAffectionate;
+        if (updatedImageUrl) {
+          cat.images = [{ url: updatedImageUrl, sourceUrl: updatedImageSourceUrl }];
+        }
         return cat.save()
       })
 
