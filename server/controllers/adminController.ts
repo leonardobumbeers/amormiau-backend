@@ -112,6 +112,16 @@ exports.getAvailableCats = async (_req: Request, res: Response, next: NextFuncti
   }
 };
 
+exports.getAvailableCat = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const cat = await Cat.findOne({ _id: req.params.catId, available: true });
+    if (!cat) throw new Error('Cat not found');
+    res.status(200).json({ data: cat });
+  } catch (error) {
+    next(error);
+  }
+};
+
 
 exports.getCat = async (req: Request, res: Response, next: NextFunction) => {
   try {

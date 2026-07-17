@@ -20,6 +20,7 @@ jest.mock('../controllers/adminController', () => {
     registerCat: handler('registerCat'),
     getCats: handler('getCats'),
     getAvailableCats: handler('getAvailableCats'),
+    getAvailableCat: handler('getAvailableCat'),
     getCat: handler('getCat'),
     adoptCat: handler('adoptCat'),
     deprecatedAdoptCat: handler('deprecatedAdoptCat'),
@@ -44,6 +45,7 @@ app.use('/admin', adminRoutes);
 describe('route integration contracts', () => {
   it.each([
     ['get', '/cats', 'getAvailableCats'],
+    ['get', '/cats/c1', 'getAvailableCat'],
     ['post', '/signup', 'signup'],
     ['post', '/login', 'login'],
     ['get', '/user/u1', 'getUser'],

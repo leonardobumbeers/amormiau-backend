@@ -308,6 +308,25 @@ describe('HTTP API integration', () => {
       expect(Cat.find).toHaveBeenCalledWith({ available: true });
     });
 
+    it('returns one available cat without requiring authentication', async () => {
+      Cat.findOne.mockResolvedValue({ _id: 'c1', name: 'Miau', available: true });
+
+      const response = await request(app).get('/cats/c1');
+
+      expect(response.status).toBe(200);
+      expect(response.body.data).toMatchObject({ _id: 'c1', name: 'Miau' });
+      expect(Cat.findOne).toHaveBeenCalledWith({ _id: 'c1', available: true });
+    });
+
+    it('does not expose an unavailable cat through the public detail route', async () => {
+      Cat.findOne.mockResolvedValue(null);
+
+      const response = await request(app).get('/cats/unavailable');
+
+      expect(response.status).toBe(404);
+      expect(response.body).toEqual({ error: 'Cat not found' });
+    });
+
     it('registers a cat through the admin API', async () => {
       const save = jest.fn().mockResolvedValue(undefined);
       Cat.mockImplementation(data => ({ ...data, _id: 'c1', save }));
