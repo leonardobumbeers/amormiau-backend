@@ -13,6 +13,22 @@ const Cat = require('../models/catModel');
 const { roles } = require('../roles');
 const { sanitizeUser } = require('../util/privacy');
 
+function remoteImages(body: Record<string, unknown>): Array<{ url: string; sourceUrl?: string }> {
+  if (Array.isArray(body.imageUrls)) {
+    const sourceUrls = Array.isArray(body.imageSourceUrls) ? body.imageSourceUrls : [];
+    return body.imageUrls
+      .filter((url): url is string => typeof url === 'string' && Boolean(url.trim()))
+      .map((url, index) => ({
+        url: url.trim(),
+        ...(typeof sourceUrls[index] === 'string' ? { sourceUrl: sourceUrls[index] } : {})
+      }));
+  }
+
+  return typeof body.imageUrl === 'string' && body.imageUrl.trim()
+    ? [{ url: body.imageUrl.trim(), ...(typeof body.imageSourceUrl === 'string' ? { sourceUrl: body.imageSourceUrl } : {}) }]
+    : [];
+}
+
 exports.grantAccess = function (action: string, resource: string) {
   return async (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -49,9 +65,7 @@ exports.registerCat = async (req: Request, res: Response, next: NextFunction) =>
       available,
       sociable,
       playful,
-      affectionate,
-      imageUrl,
-      imageSourceUrl
+      affectionate
     } = req.body
     const images = Array.isArray(req.files) ? req.files : [];
 
@@ -70,7 +84,7 @@ exports.registerCat = async (req: Request, res: Response, next: NextFunction) =>
       sociable: sociable || 0,
       playful: playful || 0,
       affectionate: affectionate || 0,
-      images: imageUrl ? [{ url: imageUrl, sourceUrl: imageSourceUrl }] : []
+      images: remoteImages(req.body)
 
     });
 
@@ -149,8 +163,7 @@ exports.updateCat = async (req: Request, res: Response, next: NextFunction) => {
     const updatedSociable = req.body.sociable;
     const updatedPlayful = req.body.playful;
     const updatedAffectionate = req.body.affectionate;
-    const updatedImageUrl = req.body.imageUrl;
-    const updatedImageSourceUrl = req.body.imageSourceUrl;
+    const updatedImages = remoteImages(req.body);
 
     const catId = req.params.catId;
     const cat = await Cat.findById(catId)
@@ -168,8 +181,8 @@ exports.updateCat = async (req: Request, res: Response, next: NextFunction) => {
         cat.sociable = updatedSociable;
         cat.playful = updatedPlayful;
         cat.affectionate = updatedAffectionate;
-        if (updatedImageUrl) {
-          cat.images = [{ url: updatedImageUrl, sourceUrl: updatedImageSourceUrl }];
+        if (updatedImages.length) {
+          cat.images = updatedImages;
         }
         return cat.save()
       })
