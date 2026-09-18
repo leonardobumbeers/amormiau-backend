@@ -44,7 +44,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
-    "@faker-js/faker": "^6.0.0-alpha.7",
+    "@faker-js/faker": "^10.5.0",
     "@swc/core": "^1.15.43",
     "@swc/jest": "^0.2.39",
     "@types/bcrypt": "^6.0.0",
